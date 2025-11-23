@@ -407,7 +407,6 @@
                     <option value="Alimentação">Alimentação</option>
                     <option value="Manutenção">Manutenção</option>
                     <option value="Escritório">Escritório</option>
-                    <option value="Escritório">Combustivel</option>
                     <option value="Outros">Outros</option>
                 </select>
                 <input type="number" id="gastoValor" placeholder="Valor (R$)" step="0.01" required>
@@ -532,7 +531,7 @@
 
     <script>
         // URL da API WEB do Google Apps Script - SUBSTITUA ESTA URL PELA SUA!
-        const webAppUrl = "https://script.google.com/macros/s/AKfycbzirLFf7ExY9FWqDymC2AD40Okyz9tNatz_lnZPOzU8UM69od8lpDHcOStp2OIvULy7/exec";
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbzeeUkhVtoBi6kvgusf7hlVVvAKkqM04ypTG92e4rH5hTSYOMW9bzFwuf0RfTTz0XTj/exec";
 
         let dados = {
             gastos: [],
@@ -543,56 +542,61 @@
 
         let chartInstances = {};
 
-        function carregarDadosExemplo() {
-            // Dados de Exemplo (Usados em caso de falha na API)
-            const hoje = new Date().toISOString().split('T')[0];
-            const dataProximo = new Date();
-            dataProximo.setDate(dataProximo.getDate() + 3);
-            const dataProximoStr = dataProximo.toISOString().split('T')[0];
-            const dataVencido = new Date();
-            dataVencido.setDate(dataVencido.getDate() - 5);
-            const dataVencidoStr = dataVencido.toISOString().split('T')[0];
-            
-            dados = {
-                gastos: [
-                    { data: hoje, descricao: 'Combustível', valor: 250.00, categoria: 'Transporte' },
-                    { data: hoje, descricao: 'Almoço equipe', valor: 120.00, categoria: 'Alimentação' },
-                    { data: '2025-11-22', descricao: 'Material escritório', valor: 85.50, categoria: 'Escritório' },
-                    { data: '2025-11-20', descricao: 'Pedágio', valor: 40.00, categoria: 'Transporte' },
-                    { data: '2025-11-18', descricao: 'Reparo máquina', valor: 550.00, categoria: 'Manutenção' },
-                    { data: '2025-11-15', descricao: 'Café da manhã', valor: 50.00, categoria: 'Alimentação' }
-                ],
-                boletos: [
-                    { id: 1, descricao: 'Energia Elétrica', valor: 450.00, vencimento: dataProximoStr, status: 'Pendente', dataPagamento: '', meioPagamento: '' },
-                    { id: 2, descricao: 'Água', valor: 120.00, vencimento: dataVencidoStr, status: 'Pendente', dataPagamento: '', meioPagamento: '' },
-                    { id: 3, descricao: 'Internet', valor: 199.90, vencimento: '2025-12-05', status: 'Pendente', dataPagamento: '', meioPagamento: '' },
-                    { id: 4, descricao: 'Aluguel', valor: 2500.00, vencimento: '2025-10-01', status: 'Pago', dataPagamento: '2025-09-30', meioPagamento: 'Pix Santander' }
-                ],
-                estoque: [
-                    { id: 1, item: 'Capacete', quantidade: 45, minimo: 20, categoria: 'Proteção', dataUltimaEntrada: '2025-11-01', dataUltimaSaida: '2025-11-20' },
-                    { id: 2, item: 'Luva', quantidade: 120, minimo: 50, categoria: 'Proteção', dataUltimaEntrada: '2025-11-10', dataUltimaSaida: hoje },
-                    { id: 3, item: 'Óculos de Proteção', quantidade: 15, minimo: 30, categoria: 'Proteção', dataUltimaEntrada: '2025-10-25', dataUltimaSaida: '2025-11-22' }
-                ],
-                materiais: [
-                    { data: '2025-11-20', item: 'Cimento', quantidade: 50, valor: 1500.00, fornecedor: 'Constrular' },
-                    { data: '2025-11-18', item: 'Areia', quantidade: 100, valor: 800.00, fornecedor: 'Areião' }
-                ]
-            };
-            
-            dados.boletos.forEach((b, i) => b.id = b.id || (i + 1));
-            dados.estoque.forEach((e, i) => e.id = e.id || (i + 1));
+        // --- FUNÇÕES DE COMUNICAÇÃO COM O GOOGLE APPS SCRIPT (GAS) ---
 
-            atualizarDashboard();
+        /**
+         * Envia dados via POST para o Apps Script (para adicionar ou atualizar linhas).
+         * @param {string} sheetName - Nome da aba (Ex: 'Gastos', 'Boletos').
+         * @param {string} action - Ação a ser realizada (Ex: 'add', 'update').
+         * @param {Object} dataToSend - Objeto com os dados a serem enviados. As chaves devem corresponder aos cabeçalhos do Sheets.
+         */
+        async function enviarDadosParaAppsScript(sheetName, action, dataToSend) {
+            const url = webAppUrl; 
+            
+            const payload = {
+                sheet: sheetName,
+                action: action,
+                data: dataToSend
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`Sucesso: ${result.message}`);
+                    // Recarrega os dados do Sheets após o sucesso
+                    carregarDados(); 
+                    return true;
+                } else {
+                    throw new Error(result.error || "Erro desconhecido na API.");
+                }
+            } catch (error) {
+                console.error("Erro ao enviar dados:", error);
+                alert(`Falha ao salvar no Google Sheets. Detalhes: ${error.message}`);
+                return false;
+            }
         }
 
         function carregarDados() {
             if (!webAppUrl || webAppUrl.includes("AKfycbyGYfUdoyPExuRrnTds6ZbwLNpc13K8bsgPh4K-ME2zWUmomC8j45TjvwnRsGKRF_pM")) {
-                alert('A URL da API Web do Google Apps Script não está configurada ou é a URL de exemplo! Carregando dados de exemplo.');
-                return carregarDadosExemplo(); 
+                alert('A URL da API Web do Google Apps Script não está configurada ou é a URL de exemplo! A comunicação será simulada.');
+                // Simulação local de dados se a API não estiver configurada
+                carregarDadosExemplo(); 
+                return;
             }
 
-            // Requisição Fetch para buscar os dados na API Web
-            fetch(webAppUrl)
+            // Requisição GET para buscar os dados na API Web
+            fetch(webAppUrl, { method: 'GET', mode: 'cors' })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`Erro de rede: ${response.status}`);
@@ -606,20 +610,11 @@
                     }
                     
                     dados.gastos = data.gastos || [];
-                    // Adicionado valores padrão para novas propriedades caso não venham da API
-                    dados.boletos = (data.boletos || []).map(b => ({
-                        ...b,
-                        dataPagamento: b.dataPagamento || '',
-                        meioPagamento: b.meioPagamento || ''
-                    }));
-                    dados.estoque = (data.estoque || []).map(e => ({
-                        ...e,
-                        dataUltimaEntrada: e.dataUltimaEntrada || '',
-                        dataUltimaSaida: e.dataUltimaSaida || ''
-                    }));
+                    dados.boletos = data.boletos || [];
+                    dados.estoque = data.estoque || [];
                     dados.materiais = data.materiais || [];
 
-                    alert('Dados atualizados com sucesso do Google Sheets! (Via Apps Script)');
+                    // alert('Dados atualizados com sucesso do Google Sheets!');
                     atualizarDashboard();
                     
                     const abaAtiva = document.querySelector('.tab-content.active').id;
@@ -627,10 +622,45 @@
                     if (abaAtiva === 'relatorios') gerarRelatorio();
                 })
                 .catch(error => {
-                    console.error('Falha ao carregar dados:', error);
+                    console.error('Falha ao carregar dados (doGet):', error);
                     alert(`Falha ao conectar com a API Web. Carregando dados de exemplo. Detalhes: ${error.message}.`);
+                    // Carrega dados de exemplo em caso de falha de conexão
                     carregarDadosExemplo(); 
                 });
+        }
+        
+        // --- FUNÇÕES DE LÓGICA DE NEGÓCIO ---
+
+        function carregarDadosExemplo() {
+            // Se o fetch falhar, usamos dados locais (apenas para exibição)
+            const hoje = new Date().toISOString().split('T')[0];
+            const dataProximo = new Date();
+            dataProximo.setDate(dataProximo.getDate() + 3);
+            const dataProximoStr = dataProximo.toISOString().split('T')[0];
+            const dataVencido = new Date();
+            dataVencido.setDate(dataVencido.getDate() - 5);
+            const dataVencidoStr = dataVencido.toISOString().split('T')[0];
+            
+            dados = {
+                gastos: [
+                    { Data: hoje, Descrição: 'Combustível', Valor: 250.00, Categoria: 'Transporte' },
+                ],
+                boletos: [
+                    // Adicionamos 'id_sheet' manualmente para simular a leitura do GAS
+                    { id_sheet: 2, Descrição: 'Energia Elétrica', Valor: 450.00, Vencimento: dataProximoStr, Status: 'Pendente', "Data Pagamento": '', "Meio Pagamento": '' },
+                    { id_sheet: 3, Descrição: 'Água', Valor: 120.00, Vencimento: dataVencidoStr, Status: 'Pendente', "Data Pagamento": '', "Meio Pagamento": '' },
+                    { id_sheet: 4, Descrição: 'Aluguel', Valor: 2500.00, Vencimento: '2025-10-01', Status: 'Pago', "Data Pagamento": '2025-09-30', "Meio Pagamento": 'Pix Santander' }
+                ],
+                estoque: [
+                    { id_sheet: 2, Item: 'Capacete', Quantidade: 45, Mínimo: 20, Categoria: 'Proteção', "Última Entrada": '2025-11-01', "Última Saída": '2025-11-20' },
+                    { id_sheet: 4, Item: 'Óculos de Proteção', Quantidade: 15, Mínimo: 30, Categoria: 'Proteção', "Última Entrada": '2025-10-25', "Última Saída": '2025-11-22' }
+                ],
+                materiais: [
+                    { Data: '2025-11-20', Item: 'Cimento', Quantidade: 50, "Valor Total": 1500.00, Fornecedor: 'Constrular' },
+                ]
+            };
+            
+            atualizarDashboard();
         }
 
         function mudarAba(aba) {
@@ -664,8 +694,9 @@
         function formatarData(data) {
             if (!data || data === 'N/A') return 'N/A';
             try {
-                const d = new Date(data + 'T00:00:00');
-                if (isNaN(d)) return data;
+                // Trata a string YYYY-MM-DD como UTC para evitar mudança de fuso horário
+                const d = new Date(data + 'T00:00:00'); 
+                if (isNaN(d.getTime())) return data;
                 return d.toLocaleDateString('pt-BR');
             } catch {
                 return data;
@@ -675,7 +706,7 @@
         function calcularDiasAteVencimento(dataVencimento) {
             const hoje = new Date();
             hoje.setHours(0, 0, 0, 0);
-            const vencimento = new Date(dataVencimento);
+            const vencimento = new Date(dataVencimento + 'T00:00:00');
             vencimento.setHours(0, 0, 0, 0);
             const diff = Math.ceil((vencimento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
             return diff;
@@ -690,79 +721,175 @@
             return { classe: 'status-ok', texto: 'Pendente' };
         }
 
-        // --- MODIFICAÇÃO BOLETOS: Coletar Meio de Pagamento ---
-        function marcarBoletoPago(id) {
-            const boleto = dados.boletos.find(b => b.id === id);
-            if (boleto) {
-                if (boleto.status === 'Pago') {
-                    alert('Boleto já está marcado como Pago.');
-                    return;
-                }
+        // --- FUNÇÕES DE TRANSAÇÃO (ADICIONAR) ---
 
-                const hoje = new Date().toISOString().split('T')[0];
-                
-                const meio = prompt(`Qual o meio de pagamento para "${boleto.descricao}" (Ex: Pix, Débito, Santander)?`);
-                
-                if (!meio || meio.trim() === '') {
-                    alert('Meio de pagamento obrigatório para registrar o pagamento.');
-                    return;
-                }
+        async function adicionarGasto() {
+            const data = document.getElementById('gastoData').value;
+            const descricao = document.getElementById('gastoDescricao').value;
+            const categoria = document.getElementById('gastoCategoria').value;
+            const valor = parseFloat(document.getElementById('gastoValor').value);
 
-                boleto.status = 'Pago';
-                boleto.dataPagamento = hoje;
-                boleto.meioPagamento = meio.trim();
-                
-                alert(`Boleto ${boleto.descricao} marcado como Pago via ${meio.trim()} em ${formatarData(hoje)}! (Simulação)`);
-                
-                atualizarDashboard();
-                montarTabelaBoletos(dados.boletos, 'tabelaBoletos');
-                atualizarGraficos();
+            if (!data || !descricao || !categoria || isNaN(valor) || valor <= 0) {
+                alert('Preencha todos os campos corretamente para registrar o gasto.');
+                return;
             }
+
+            const novoGasto = { 
+                'Data': data, // Chaves devem corresponder EXATAMENTE aos cabeçalhos da planilha
+                'Descrição': descricao, 
+                'Categoria': categoria, 
+                'Valor': valor 
+            };
+
+            await enviarDadosParaAppsScript('Gastos', 'add', novoGasto);
         }
 
-        // --- MODIFICAÇÃO ESTOQUE: Registrar Data de Entrada ---
-        function entradaEstoque(id) {
-            const item = dados.estoque.find(e => e.id === id);
-            if (item) {
-                const quantidade = parseInt(prompt(`Quantas unidades de ${item.item} estão entrando no estoque?`));
-                if (isNaN(quantidade) || quantidade <= 0) {
-                    alert('Entrada inválida.');
-                    return;
-                }
-                item.quantidade = parseInt(item.quantidade) + quantidade;
-                item.dataUltimaEntrada = new Date().toISOString().split('T')[0];
-                
-                alert(`${quantidade} unidades de ${item.item} adicionadas! Novo total: ${item.quantidade}. (Simulação)`);
-                
-                atualizarDashboard();
-                montarTabelaEstoque(dados.estoque, 'tabelaEstoque');
-                atualizarGraficos();
+        async function adicionarBoleto() {
+            const descricao = document.getElementById('boletoDescricao').value;
+            const valor = parseFloat(document.getElementById('boletoValor').value);
+            const vencimento = document.getElementById('boletoVencimento').value;
+
+            if (!descricao || !vencimento || isNaN(valor) || valor <= 0) {
+                alert('Preencha todos os campos corretamente para registrar o boleto.');
+                return;
             }
+
+            const novoBoleto = { 
+                'Descrição': descricao, 
+                'Valor': valor, 
+                'Vencimento': vencimento, 
+                'Status': 'Pendente', 
+                'Data Pagamento': '', 
+                'Meio Pagamento': '' 
+            };
+            
+            await enviarDadosParaAppsScript('Boletos', 'add', novoBoleto);
         }
 
-        // --- MODIFICAÇÃO ESTOQUE: Registrar Data de Saída ---
-        function saidaEstoque(id) {
-            const item = dados.estoque.find(e => e.id === id);
-            if (item) {
-                const quantidade = parseInt(prompt(`Quantas unidades de ${item.item} estão saindo do estoque?`));
-                if (isNaN(quantidade) || quantidade <= 0) {
-                    alert('Saída inválida.');
-                    return;
-                }
-                if (item.quantidade < quantidade) {
-                    alert('Quantidade em estoque insuficiente.');
-                    return;
-                }
-                item.quantidade = parseInt(item.quantidade) - quantidade;
-                item.dataUltimaSaida = new Date().toISOString().split('T')[0];
-                
-                alert(`${quantidade} unidades de ${item.item} removidas! Novo total: ${item.quantidade}. (Simulação)`);
-                
-                atualizarDashboard();
-                montarTabelaEstoque(dados.estoque, 'tabelaEstoque');
-                atualizarGraficos();
+        async function adicionarEPI() {
+            const item = document.getElementById('epiItem').value;
+            const categoria = document.getElementById('epiCategoria').value;
+            const quantidade = parseInt(document.getElementById('epiQuantidade').value);
+            const minimo = parseInt(document.getElementById('epiMinimo').value);
+            const hoje = new Date().toISOString().split('T')[0];
+
+            if (!item || !categoria || isNaN(quantidade) || quantidade < 0 || isNaN(minimo) || minimo < 0) {
+                alert('Preencha todos os campos corretamente para registrar o EPI.');
+                return;
             }
+
+            const novoEPI = { 
+                'Item': item, 
+                'Categoria': categoria, 
+                'Quantidade': quantidade, 
+                'Mínimo': minimo, 
+                'Última Entrada': hoje, 
+                'Última Saída': '' 
+            };
+            
+            await enviarDadosParaAppsScript('Estoque', 'add', novoEPI);
         }
+
+        async function adicionarMaterial() {
+            const data = document.getElementById('materialData').value;
+            const item = document.getElementById('materialItem').value;
+            const quantidade = parseInt(document.getElementById('materialQuantidade').value);
+            const valor = parseFloat(document.getElementById('materialValor').value);
+            const fornecedor = document.getElementById('materialFornecedor').value;
+
+            if (!data || !item || !fornecedor || isNaN(quantidade) || quantidade <= 0 || isNaN(valor) || valor <= 0) {
+                alert('Preencha todos os campos corretamente para registrar a compra de material.');
+                return;
+            }
+
+            const novoMaterial = { 
+                'Data': data, 
+                'Item': item, 
+                'Quantidade': quantidade, 
+                'Valor Total': valor, 
+                'Fornecedor': fornecedor 
+            };
+            
+            await enviarDadosParaAppsScript('Materiais', 'add', novoMaterial);
+        }
+        
+        // --- FUNÇÕES DE TRANSAÇÃO (ATUALIZAR) ---
+
+        async function marcarBoletoPago(id_sheet) {
+            const boleto = dados.boletos.find(b => b.id_sheet === id_sheet);
+            if (boleto.Status === 'Pago') {
+                alert('Boleto já está marcado como Pago.');
+                return;
+            }
+
+            const hoje = new Date().toISOString().split('T')[0];
+            
+            const meio = prompt(`Qual o meio de pagamento para "${boleto.Descrição}" (Ex: Pix, Débito)?`);
+            
+            if (!meio || meio.trim() === '') {
+                alert('Meio de pagamento obrigatório para registrar o pagamento.');
+                return;
+            }
+
+            // Os nomes das chaves devem ser os cabeçalhos da planilha
+            const dadosAtualizados = {
+                'id_sheet': id_sheet, // Chave de busca (linha da planilha)
+                'Status': 'Pago', 
+                'Data Pagamento': hoje,
+                'Meio Pagamento': meio.trim()
+            };
+
+            await enviarDadosParaAppsScript('Boletos', 'update', dadosAtualizados);
+        }
+
+        async function entradaEstoque(id_sheet) {
+            const item = dados.estoque.find(e => e.id_sheet === id_sheet);
+            if (!item) return;
+
+            const quantidade = parseInt(prompt(`Quantas unidades de ${item.Item} estão entrando no estoque?`));
+            if (isNaN(quantidade) || quantidade <= 0) {
+                alert('Entrada inválida.');
+                return;
+            }
+            
+            const novaQuantidade = parseInt(item.Quantidade) + quantidade;
+            const hoje = new Date().toISOString().split('T')[0];
+            
+            const dadosAtualizados = {
+                'id_sheet': id_sheet,
+                'Quantidade': novaQuantidade,
+                'Última Entrada': hoje
+            };
+
+            await enviarDadosParaAppsScript('Estoque', 'update', dadosAtualizados);
+        }
+
+        async function saidaEstoque(id_sheet) {
+            const item = dados.estoque.find(e => e.id_sheet === id_sheet);
+            if (!item) return;
+
+            const quantidade = parseInt(prompt(`Quantas unidades de ${item.Item} estão saindo do estoque?`));
+            if (isNaN(quantidade) || quantidade <= 0) {
+                alert('Saída inválida.');
+                return;
+            }
+            if (item.Quantidade < quantidade) {
+                alert('Quantidade em estoque insuficiente.');
+                return;
+            }
+            
+            const novaQuantidade = parseInt(item.Quantidade) - quantidade;
+            const hoje = new Date().toISOString().split('T')[0];
+
+            const dadosAtualizados = {
+                'id_sheet': id_sheet,
+                'Quantidade': novaQuantidade,
+                'Última Saída': hoje
+            };
+
+            await enviarDadosParaAppsScript('Estoque', 'update', dadosAtualizados);
+        }
+
 
         function atualizarDashboard() {
             // GASTOS
@@ -770,34 +897,34 @@
             const mesAtual = new Date().getMonth();
 
             const gastosHoje = dados.gastos
-                .filter(g => g.data === hoje)
-                .reduce((sum, g) => sum + parseFloat(g.valor), 0);
+                .filter(g => g.Data === hoje)
+                .reduce((sum, g) => sum + parseFloat(g.Valor), 0);
             document.getElementById('gastosHoje').textContent = formatarMoeda(gastosHoje);
 
             const gastosMes = dados.gastos
-                .filter(g => new Date(g.data + 'T00:00:00').getMonth() === mesAtual)
-                .reduce((sum, g) => sum + parseFloat(g.valor), 0);
+                .filter(g => new Date(g.Data + 'T00:00:00').getMonth() === mesAtual)
+                .reduce((sum, g) => sum + parseFloat(g.Valor), 0);
             document.getElementById('gastosMes').textContent = formatarMoeda(gastosMes);
 
             // BOLETOS
-            const boletosVencidos = dados.boletos.filter(b => b.status !== 'Pago' && calcularDiasAteVencimento(b.vencimento) < 0).length;
+            const boletosVencidos = dados.boletos.filter(b => b.Status !== 'Pago' && calcularDiasAteVencimento(b.Vencimento) < 0).length;
             document.getElementById('boletosVencidos').textContent = boletosVencidos;
 
             const proximosBoletos = dados.boletos
-                .filter(b => b.status !== 'Pago')
-                .sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento))
+                .filter(b => b.Status !== 'Pago')
+                .sort((a, b) => new Date(a.Vencimento) - new Date(b.Vencimento))
                 .slice(0, 5);
 
             let htmlVencimentos = '<table><thead><tr><th>Descrição</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
             proximosBoletos.forEach(b => {
-                const status = getStatusBoleto(b.vencimento, b.status);
+                const status = getStatusBoleto(b.Vencimento, b.Status);
                 htmlVencimentos += `
                     <tr>
-                        <td>${b.descricao}</td>
-                        <td>${formatarMoeda(b.valor)}</td>
-                        <td>${formatarData(b.vencimento)}</td>
+                        <td>${b.Descrição}</td>
+                        <td>${formatarMoeda(b.Valor)}</td>
+                        <td>${formatarData(b.Vencimento)}</td>
                         <td><span class="status-badge ${status.classe}">${status.texto}</span></td>
-                        <td>${b.status !== 'Pago' ? `<button class="btn-success btn-action" onclick="marcarBoletoPago(${b.id})">Pagar</button>` : ''}</td>
+                        <td>${b.Status !== 'Pago' ? `<button class="btn-success btn-action" onclick="marcarBoletoPago(${b.id_sheet})">Pagar</button>` : ''}</td>
                     </tr>
                 `;
             });
@@ -805,7 +932,7 @@
             document.getElementById('proximosVencimentos').innerHTML = proximosBoletos.length > 0 ? htmlVencimentos : '<p style="text-align: center; color: #888;">Nenhum boleto pendente ou próximo do vencimento.</p>';
 
             // ESTOQUE
-            const totalEPIs = dados.estoque.reduce((sum, e) => sum + parseInt(e.quantidade), 0);
+            const totalEPIs = dados.estoque.reduce((sum, e) => sum + parseInt(e.Quantidade), 0);
             document.getElementById('episEstoque').textContent = totalEPIs;
 
             // TABELAS
@@ -817,20 +944,22 @@
             else if (abaAtiva === 'materiais') montarTabelaMateriais(dados.materiais, 'tabelaMateriais');
         }
 
+        // --- FUNÇÕES DE MONTAGEM DE TABELAS (VIEW) ---
+
         function montarTabelaGastos(lista, idContainer) {
             let total = 0;
             let html = '<table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th></tr></thead><tbody>';
 
-            lista.sort((a, b) => new Date(b.data) - new Date(a.data));
+            lista.sort((a, b) => new Date(b.Data) - new Date(a.Data));
 
             lista.forEach(g => {
-                total += parseFloat(g.valor);
+                total += parseFloat(g.Valor);
                 html += `
                     <tr>
-                        <td>${formatarData(g.data)}</td>
-                        <td>${g.descricao}</td>
-                        <td>${g.categoria}</td>
-                        <td>${formatarMoeda(g.valor)}</td>
+                        <td>${formatarData(g.Data)}</td>
+                        <td>${g.Descrição}</td>
+                        <td>${g.Categoria}</td>
+                        <td>${formatarMoeda(g.Valor)}</td>
                     </tr>
                 `;
             });
@@ -846,26 +975,25 @@
             document.getElementById(idContainer).innerHTML = html;
         }
 
-        // --- MODIFICAÇÃO BOLETOS: Adicionado Data/Meio de Pagamento na Tabela ---
         function montarTabelaBoletos(lista, idContainer) {
             let html = '<table><thead><tr><th>Descrição</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Data Pag.</th><th>Meio Pag.</th><th>Ações</th></tr></thead><tbody>';
             let totalPendente = 0;
             
-            lista.sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
+            lista.sort((a, b) => new Date(a.Vencimento) - new Date(b.Vencimento));
 
             lista.forEach(b => {
-                const status = getStatusBoleto(b.vencimento, b.status);
-                if (b.status !== 'Pago') totalPendente += parseFloat(b.valor);
+                const status = getStatusBoleto(b.Vencimento, b.Status);
+                if (b.Status !== 'Pago') totalPendente += parseFloat(b.Valor);
                 
                 html += `
                     <tr>
-                        <td>${b.descricao}</td>
-                        <td>${formatarMoeda(b.valor)}</td>
-                        <td>${formatarData(b.vencimento)}</td>
+                        <td>${b.Descrição}</td>
+                        <td>${formatarMoeda(b.Valor)}</td>
+                        <td>${formatarData(b.Vencimento)}</td>
                         <td><span class="status-badge ${status.classe}">${status.texto}</span></td>
-                        <td>${b.dataPagamento ? formatarData(b.dataPagamento) : 'N/A'}</td>
-                        <td>${b.meioPagamento || 'N/A'}</td>
-                        <td>${b.status !== 'Pago' ? `<button class="btn-success btn-action" onclick="marcarBoletoPago(${b.id})">Pagar</button>` : ''}</td>
+                        <td>${b['Data Pagamento'] ? formatarData(b['Data Pagamento']) : 'N/A'}</td>
+                        <td>${b['Meio Pagamento'] || 'N/A'}</td>
+                        <td>${b.Status !== 'Pago' ? `<button class="btn-success btn-action" onclick="marcarBoletoPago(${b.id_sheet})">Pagar</button>` : ''}</td>
                     </tr>
                 `;
             });
@@ -881,28 +1009,27 @@
             document.getElementById(idContainer).innerHTML = html;
         }
 
-        // --- MODIFICAÇÃO ESTOQUE: Adicionado Data de Entrada/Saída na Tabela ---
         function montarTabelaEstoque(lista, idContainer) {
             let html = '<table><thead><tr><th>Item</th><th>Categoria</th><th>Quantidade</th><th>Mínimo</th><th>Status</th><th>Última Entrada</th><th>Última Saída</th><th>Ações</th></tr></thead><tbody>';
             let itensBaixo = 0;
 
             lista.forEach(e => {
-                const statusClass = parseInt(e.quantidade) < parseInt(e.minimo) ? 'status-baixo' : 'status-ok';
-                const statusText = parseInt(e.quantidade) < parseInt(e.minimo) ? 'Baixo' : 'OK';
+                const statusClass = parseInt(e.Quantidade) < parseInt(e.Mínimo) ? 'status-baixo' : 'status-ok';
+                const statusText = parseInt(e.Quantidade) < parseInt(e.Mínimo) ? 'Baixo' : 'OK';
                 if (statusText === 'Baixo') itensBaixo++;
                 
                 html += `
                     <tr>
-                        <td>${e.item}</td>
-                        <td>${e.categoria}</td>
-                        <td>${e.quantidade}</td>
-                        <td>${e.minimo}</td>
+                        <td>${e.Item}</td>
+                        <td>${e.Categoria}</td>
+                        <td>${e.Quantidade}</td>
+                        <td>${e.Mínimo}</td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>${e.dataUltimaEntrada ? formatarData(e.dataUltimaEntrada) : 'N/A'}</td>
-                        <td>${e.dataUltimaSaida ? formatarData(e.dataUltimaSaida) : 'N/A'}</td>
+                        <td>${e['Última Entrada'] ? formatarData(e['Última Entrada']) : 'N/A'}</td>
+                        <td>${e['Última Saída'] ? formatarData(e['Última Saída']) : 'N/A'}</td>
                         <td>
-                            <button class="btn-success btn-action" onclick="entradaEstoque(${e.id})">➕ Entrada</button>
-                            <button class="btn-danger btn-action" onclick="saidaEstoque(${e.id})">➖ Saída</button>
+                            <button class="btn-success btn-action" onclick="entradaEstoque(${e.id_sheet})">➕ Entrada</button>
+                            <button class="btn-danger btn-action" onclick="saidaEstoque(${e.id_sheet})">➖ Saída</button>
                         </td>
                     </tr>
                 `;
@@ -923,17 +1050,17 @@
             let total = 0;
             let html = '<table><thead><tr><th>Data</th><th>Item</th><th>Quantidade</th><th>Valor Total</th><th>Fornecedor</th></tr></thead><tbody>';
 
-            lista.sort((a, b) => new Date(b.data) - new Date(a.data));
+            lista.sort((a, b) => new Date(b.Data) - new Date(a.Data));
 
             lista.forEach(m => {
-                total += parseFloat(m.valor);
+                total += parseFloat(m['Valor Total']);
                 html += `
                     <tr>
-                        <td>${formatarData(m.data)}</td>
-                        <td>${m.item}</td>
-                        <td>${m.quantidade}</td>
-                        <td>${formatarMoeda(m.valor)}</td>
-                        <td>${m.fornecedor}</td>
+                        <td>${formatarData(m.Data)}</td>
+                        <td>${m.Item}</td>
+                        <td>${m.Quantidade}</td>
+                        <td>${formatarMoeda(m['Valor Total'])}</td>
+                        <td>${m.Fornecedor}</td>
                     </tr>
                 `;
             });
@@ -948,8 +1075,8 @@
             </table>`;
             document.getElementById(idContainer).innerHTML = html;
         }
-
-        // --- Funções de Gráficos ---
+        
+        // --- GRÁFICOS E RELATÓRIOS (Sem alteração crítica) ---
         
         function destruirGrafico(chartId) {
             if (chartInstances[chartId]) {
@@ -966,9 +1093,9 @@
             destruirGrafico('gastosDiariosChart');
 
             // 1. Gastos por Categoria (Mês Atual)
-            const gastosMesAtual = dados.gastos.filter(g => new Date(g.data + 'T00:00:00').getMonth() === new Date().getMonth());
+            const gastosMesAtual = dados.gastos.filter(g => new Date(g.Data + 'T00:00:00').getMonth() === new Date().getMonth());
             const gastosAgrupados = gastosMesAtual.reduce((acc, g) => {
-                acc[g.categoria] = (acc[g.categoria] || 0) + parseFloat(g.valor);
+                acc[g.Categoria] = (acc[g.Categoria] || 0) + parseFloat(g.Valor);
                 return acc;
             }, {});
 
@@ -996,7 +1123,7 @@
 
             // 2. Estoque por Status
             const statusCount = dados.estoque.reduce((acc, e) => {
-                const status = parseInt(e.quantidade) < parseInt(e.minimo) ? 'Baixo Estoque' : 'Estoque OK';
+                const status = parseInt(e.Quantidade) < parseInt(e.Mínimo) ? 'Baixo Estoque' : 'Estoque OK';
                 acc[status] = (acc[status] || 0) + 1;
                 return acc;
             }, {});
@@ -1022,18 +1149,18 @@
             // 3. Compras de Materiais (Últimos 6 meses)
             const meses = [];
             const totaisMes = [];
-            const hoje = new Date();
+            const hojeChart = new Date();
             for (let i = 5; i >= 0; i--) {
-                const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+                const d = new Date(hojeChart.getFullYear(), hojeChart.getMonth() - i, 1);
                 const mesLabel = d.toLocaleString('pt-BR', { month: 'short', year: '2-digit' });
                 meses.push(mesLabel);
 
                 const total = dados.materiais
                     .filter(m => {
-                        const dataMaterial = new Date(m.data + 'T00:00:00');
+                        const dataMaterial = new Date(m.Data + 'T00:00:00');
                         return dataMaterial.getFullYear() === d.getFullYear() && dataMaterial.getMonth() === d.getMonth();
                     })
-                    .reduce((sum, m) => sum + parseFloat(m.valor), 0);
+                    .reduce((sum, m) => sum + parseFloat(m['Valor Total']), 0);
                 
                 totaisMes.push(total);
             }
@@ -1072,9 +1199,9 @@
             }
             
             dados.gastos.forEach(g => {
-                const dataFormatada = formatarData(g.data);
+                const dataFormatada = formatarData(g.Data);
                 if (gastosDiariosMap.has(dataFormatada)) {
-                    gastosDiariosMap.set(dataFormatada, gastosDiariosMap.get(dataFormatada) + parseFloat(g.valor));
+                    gastosDiariosMap.set(dataFormatada, gastosDiariosMap.get(dataFormatada) + parseFloat(g.Valor));
                 }
             });
 
@@ -1103,91 +1230,7 @@
                 }
             });
         }
-
-        // Implementação das funções de Adição (Simulação)
-        function adicionarGasto() {
-            const data = document.getElementById('gastoData').value;
-            const descricao = document.getElementById('gastoDescricao').value;
-            const categoria = document.getElementById('gastoCategoria').value;
-            const valor = parseFloat(document.getElementById('gastoValor').value);
-
-            if (!data || !descricao || !categoria || isNaN(valor) || valor <= 0) {
-                alert('Preencha todos os campos corretamente para registrar o gasto.');
-                return;
-            }
-
-            const novoGasto = { data, descricao, categoria, valor };
-            dados.gastos.push(novoGasto);
-            
-            alert('Gasto adicionado! (Simulação)');
-            atualizarDashboard();
-            montarTabelaGastos(dados.gastos, 'tabelaGastos');
-            // Aqui você enviaria para a API
-        }
-
-        function adicionarBoleto() {
-            const descricao = document.getElementById('boletoDescricao').value;
-            const valor = parseFloat(document.getElementById('boletoValor').value);
-            const vencimento = document.getElementById('boletoVencimento').value;
-
-            if (!descricao || !vencimento || isNaN(valor) || valor <= 0) {
-                alert('Preencha todos os campos corretamente para registrar o boleto.');
-                return;
-            }
-
-            const novoId = Math.max(0, ...dados.boletos.map(b => b.id)) + 1;
-            const novoBoleto = { id: novoId, descricao, valor, vencimento, status: 'Pendente', dataPagamento: '', meioPagamento: '' };
-            dados.boletos.push(novoBoleto);
-
-            alert('Boleto adicionado! (Simulação)');
-            atualizarDashboard();
-            montarTabelaBoletos(dados.boletos, 'tabelaBoletos');
-            // Aqui você enviaria para a API
-        }
-
-        function adicionarEPI() {
-            const item = document.getElementById('epiItem').value;
-            const categoria = document.getElementById('epiCategoria').value;
-            const quantidade = parseInt(document.getElementById('epiQuantidade').value);
-            const minimo = parseInt(document.getElementById('epiMinimo').value);
-            const hoje = new Date().toISOString().split('T')[0];
-
-            if (!item || !categoria || isNaN(quantidade) || quantidade < 0 || isNaN(minimo) || minimo < 0) {
-                alert('Preencha todos os campos corretamente para registrar o EPI.');
-                return;
-            }
-
-            const novoId = Math.max(0, ...dados.estoque.map(e => e.id)) + 1;
-            const novoEPI = { id: novoId, item, categoria, quantidade, minimo, dataUltimaEntrada: hoje, dataUltimaSaida: '' };
-            dados.estoque.push(novoEPI);
-
-            alert('EPI adicionado! (Simulação)');
-            atualizarDashboard();
-            montarTabelaEstoque(dados.estoque, 'tabelaEstoque');
-            // Aqui você enviaria para a API
-        }
-
-        function adicionarMaterial() {
-            const data = document.getElementById('materialData').value;
-            const item = document.getElementById('materialItem').value;
-            const quantidade = parseInt(document.getElementById('materialQuantidade').value);
-            const valor = parseFloat(document.getElementById('materialValor').value);
-            const fornecedor = document.getElementById('materialFornecedor').value;
-
-            if (!data || !item || !fornecedor || isNaN(quantidade) || quantidade <= 0 || isNaN(valor) || valor <= 0) {
-                alert('Preencha todos os campos corretamente para registrar a compra de material.');
-                return;
-            }
-
-            const novoMaterial = { data, item, quantidade, valor, fornecedor };
-            dados.materiais.push(novoMaterial);
-
-            alert('Material adicionado! (Simulação)');
-            atualizarDashboard();
-            montarTabelaMateriais(dados.materiais, 'tabelaMateriais');
-            // Aqui você enviaria para a API
-        }
-
+        
         // Funções auxiliares para Relatórios
         function filtrarDadosPorData(lista, campoData, inicio, fim) {
             if (!inicio || !fim) return lista;
@@ -1200,7 +1243,6 @@
             });
         }
 
-        // --- MODIFICAÇÃO RELATÓRIO: Chamando as tabelas com os novos campos ---
         function gerarRelatorio() {
             const inicio = document.getElementById('relatorioDataInicio').value;
             const fim = document.getElementById('relatorioDataFim').value;
@@ -1215,21 +1257,21 @@
                                 <p style="margin-bottom: 20px;"><strong>Período:</strong> ${inicio ? formatarData(inicio) + ' a ' + formatarData(fim) : 'Completo'}</p>`;
             
             // Filtra os dados
-            const gastosFiltrados = filtrarDadosPorData(dados.gastos, 'data', inicio, fim);
+            const gastosFiltrados = filtrarDadosPorData(dados.gastos, 'Data', inicio, fim);
             const boletosFiltrados = dados.boletos;
             const estoqueFiltrado = dados.estoque; 
-            const materiaisFiltrados = filtrarDadosPorData(dados.materiais, 'data', inicio, fim);
+            const materiaisFiltrados = filtrarDadosPorData(dados.materiais, 'Data', inicio, fim);
 
             // Adiciona o conteúdo selecionado
             if (document.getElementById('checkResumo').checked) {
-                const totalGastos = gastosFiltrados.reduce((sum, g) => sum + parseFloat(g.valor), 0);
-                const totalBoletosP = boletosFiltrados.filter(b => b.status !== 'Pago').reduce((sum, b) => sum + parseFloat(b.valor), 0);
+                const totalGastos = gastosFiltrados.reduce((sum, g) => sum + parseFloat(g.Valor), 0);
+                const totalBoletosP = boletosFiltrados.filter(b => b.Status !== 'Pago').reduce((sum, b) => sum + parseFloat(b.Valor), 0);
                 
                 htmlRelatorio += `
                     <div class="cards-grid">
                         <div class="card"><div class="card-title">Total Gasto no Período</div><div class="card-value">${formatarMoeda(totalGastos)}</div></div>
                         <div class="card danger"><div class="card-title">Total Boletos Pendentes</div><div class="card-value">${formatarMoeda(totalBoletosP)}</div></div>
-                        <div class="card success"><div class="card-title">Itens Estoque Baixo</div><div class="card-value">${estoqueFiltrado.filter(e => parseInt(e.quantidade) < parseInt(e.minimo)).length}</div></div>
+                        <div class="card success"><div class="card-title">Itens Estoque Baixo</div><div class="card-value">${estoqueFiltrado.filter(e => parseInt(e.Quantidade) < parseInt(e.Mínimo)).length}</div></div>
                     </div>
                     <h2 style="margin-top: 30px; color: #667eea;">Detalhes do Relatório</h2>
                 `;
@@ -1239,10 +1281,10 @@
                 htmlRelatorio += `<h3 style="margin-top: 20px; color: #333;">Gastos Diários (${gastosFiltrados.length} Registros)</h3>`;
                 htmlRelatorio += gerarTabelaHTML(gastosFiltrados, 
                     ['Data', 'Descrição', 'Categoria', 'Valor'], 
-                    ['data', 'descricao', 'categoria', 'valor'], 
-                    'valor', 
+                    ['Data', 'Descrição', 'Categoria', 'Valor'], 
+                    'Valor', 
                     'Total Gasto',
-                    { formatarData: ['data'], formatarMoeda: ['valor'] }
+                    { formatarData: ['Data'], formatarMoeda: ['Valor'] }
                 );
             }
             
@@ -1250,10 +1292,10 @@
                 htmlRelatorio += `<h3 style="margin-top: 20px; color: #333;">Controle de Boletos (${boletosFiltrados.length} Registros)</h3>`;
                 htmlRelatorio += gerarTabelaHTML(boletosFiltrados, 
                     ['Descrição', 'Valor', 'Vencimento', 'Status', 'Data Pag.', 'Meio Pag.'], 
-                    ['descricao', 'valor', 'vencimento', 'status', 'dataPagamento', 'meioPagamento'], 
-                    'valor', 
+                    ['Descrição', 'Valor', 'Vencimento', 'Status', 'Data Pagamento', 'Meio Pagamento'], 
+                    'Valor', 
                     'Total Pendente',
-                    { formatarData: ['vencimento', 'dataPagamento'], totalFiltrado: (b) => b.status !== 'Pago' }
+                    { formatarData: ['Vencimento', 'Data Pagamento'], totalFiltrado: (b) => b.Status !== 'Pago' }
                 );
             }
             
@@ -1261,10 +1303,10 @@
                 htmlRelatorio += `<h3 style="margin-top: 20px; color: #333;">Estoque de EPIs (${estoqueFiltrado.length} Itens)</h3>`;
                 htmlRelatorio += gerarTabelaHTML(estoqueFiltrado, 
                     ['Item', 'Categoria', 'Quantidade', 'Mínimo', 'Status', 'Última Entrada', 'Última Saída'], 
-                    ['item', 'categoria', 'quantidade', 'minimo', (e) => parseInt(e.quantidade) < parseInt(e.minimo) ? 'Baixo' : 'OK', 'dataUltimaEntrada', 'dataUltimaSaida'], 
+                    ['Item', 'Categoria', 'Quantidade', 'Mínimo', (e) => parseInt(e.Quantidade) < parseInt(e.Mínimo) ? 'Baixo' : 'OK', 'Última Entrada', 'Última Saída'], 
                     null, 
                     'Itens Baixo Estoque',
-                    { formatarData: ['dataUltimaEntrada', 'dataUltimaSaida'], totalPersonalizado: estoqueFiltrado.filter(e => parseInt(e.quantidade) < parseInt(e.minimo)).length, totalNaUltimaColuna: true }
+                    { formatarData: ['Última Entrada', 'Última Saída'], totalPersonalizado: estoqueFiltrado.filter(e => parseInt(e.Quantidade) < parseInt(e.Mínimo)).length, totalNaUltimaColuna: true }
                 );
             }
             
@@ -1272,10 +1314,10 @@
                 htmlRelatorio += `<h3 style="margin-top: 20px; color: #333;">Compra de Materiais (${materiaisFiltrados.length} Registros)</h3>`;
                 htmlRelatorio += gerarTabelaHTML(materiaisFiltrados, 
                     ['Data', 'Item', 'Quantidade', 'Valor Total', 'Fornecedor'], 
-                    ['data', 'item', 'quantidade', 'valor', 'fornecedor'], 
-                    'valor', 
+                    ['Data', 'Item', 'Quantidade', 'Valor Total', 'Fornecedor'], 
+                    'Valor Total', 
                     'Total Gasto',
-                    { formatarData: ['data'], formatarMoeda: ['valor'] }
+                    { formatarData: ['Data'], formatarMoeda: ['Valor Total'] }
                 );
             }
 
@@ -1334,13 +1376,11 @@
                 const totalIsNumeric = totalKey !== null;
                 const totalValue = totalIsNumeric ? formatarMoeda(totalCalculado) : formatOptions.totalPersonalizado;
                 
-                // Encontra a coluna de valor ou assume a última para totais não monetários
                 let totalColumnIndex = headers.length - 1; 
                 if (totalKey) {
                     const valueHeaderIndex = headers.findIndex(h => h.includes('Valor') || h.includes('Total'));
                     if (valueHeaderIndex !== -1) totalColumnIndex = valueHeaderIndex;
                 } else if (!formatOptions.totalNaUltimaColuna) {
-                    // Se for um total não monetário mas não quiser na última coluna, desconsidera
                     totalColumnIndex = -1;
                 }
                 
@@ -1350,17 +1390,14 @@
 
                     html += `<tfoot><tr><td colspan="${colSpan + 1}">${totalLabel}</td>`;
                     
-                    // Preenche as células vazias antes da célula do total
                     for(let i = 0; i < valueColSpan - 1; i++) {
                         html += '<td></td>';
                     }
                     
-                    // Célula do total (que pode ter colspan 1)
                     html += `<td colspan="${valueColSpan - (valueColSpan > 1 ? 1 : 0)}">${totalValue}</td>`;
                     
                     html += `</tr></tfoot>`;
                 } else if (totalKey) {
-                    // Fallback para total monetário na última coluna se não achou "Valor"
                      html += `<tfoot><tr><td colspan="${headers.length - 1}">${totalLabel}</td><td>${totalValue}</td></tr></tfoot>`;
                 }
             }
@@ -1369,6 +1406,7 @@
             html += '</table>';
             return `<div class="data-table" style="box-shadow: none; padding: 15px 0;">${html}</div>`;
         }
+
 
         function inicializarFiltrosRelatorio() {
             const hoje = new Date().toISOString().split('T')[0];
