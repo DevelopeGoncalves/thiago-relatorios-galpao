@@ -400,13 +400,11 @@
             <p>Dashboard completo de controle financeiro e estoque</p>
             
             <div class="config-section">
-                <h3>🔗 Configuração do Google Sheets (Via Apps Script)</h3>
+                <h3>🔗 Conexão Google Sheets (Via Apps Script)</h3>
                 <div class="input-group">
-                    <input type="text" id="sheetId" placeholder="ID da Planilha do Google Sheets">
-                    <button class="btn-primary" onclick="salvarConfiguracao()">Salvar Configuração</button>
-                    <button class="btn-success" onclick="carregarDados()">Atualizar Dados</button>
+                    <button class="btn-primary" onclick="carregarDados()">Atualizar Dados</button>
                 </div>
-                <small style="color: #666;">A URL da API Web está fixa no código, use este campo apenas para guardar o ID da planilha.</small>
+                <small style="color: #666;">A URL da API Web está configurada diretamente no código JavaScript.</small>
             </div>
         </header>
 
@@ -619,7 +617,7 @@
     </div>
 
     <script>
-        // URL da API WEB do Google Apps Script (Corrigida e Fixa)
+        // URL da API WEB do Google Apps Script (FIXA NO CÓDIGO)
         const webAppUrl = "https://script.google.com/macros/s/AKfycbyGYfUdoyPExuRrnTds6ZbwLNpc13K8bsgPh4K-ME2zWUmomC8j45TjvwnRsGKRF_pM/exec";
 
         let dados = {
@@ -632,7 +630,7 @@
         let chartInstances = {};
 
         function carregarDadosExemplo() {
-            // Dados de Exemplo (Usados em caso de falha na API ou na primeira carga)
+            // Dados de Exemplo (Usados em caso de falha na API)
             const hoje = new Date().toISOString().split('T')[0];
             const dataProximo = new Date();
             dataProximo.setDate(dataProximo.getDate() + 3);
@@ -670,13 +668,12 @@
             dados.boletos.forEach((b, i) => b.id = b.id || (i + 1));
             dados.estoque.forEach((e, i) => e.id = e.id || (i + 1));
 
-            // Garante que o dashboard seja atualizado
             atualizarDashboard();
         }
 
         function carregarDados() {
             if (!webAppUrl) {
-                alert('A URL da sua API Web do Google Apps Script não está configurada!');
+                alert('A URL da API Web do Google Apps Script não está configurada no código!');
                 return carregarDadosExemplo(); 
             }
 
@@ -684,7 +681,7 @@
             fetch(webAppUrl)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`Erro de rede: ${response.status}`);
+                        throw new Error(`Erro de rede: ${response.status} - Verifique a URL e as permissões CORS.`);
                     }
                     return response.json();
                 })
@@ -694,7 +691,6 @@
                         return;
                     }
                     
-                    // As chaves do objeto 'data' devem ser minúsculas e corresponder às abas
                     dados.gastos = data.gastos || [];
                     dados.boletos = data.boletos || [];
                     dados.estoque = data.estoque || [];
@@ -703,29 +699,17 @@
                     alert('Dados atualizados com sucesso do Google Sheets! (Via Apps Script)');
                     atualizarDashboard();
                     
-                    // Se estiver na aba gráficos ou relatórios, atualiza o conteúdo
                     const abaAtiva = document.querySelector('.tab-content.active').id;
                     if (abaAtiva === 'graficos') atualizarGraficos();
                     if (abaAtiva === 'relatorios') gerarRelatorio();
                 })
                 .catch(error => {
                     console.error('Falha ao carregar dados:', error);
-                    alert(`Falha ao conectar com a API Web. Carregando dados de exemplo. Detalhes: ${error.message}. Verifique se a planilha está pública e a URL está correta.`);
+                    alert(`Falha ao conectar com a API Web. Carregando dados de exemplo. Detalhes: ${error.message}. Verifique se a planilha está pública e a URL do Apps Script está correta.`);
                     carregarDadosExemplo(); 
                 });
         }
 
-        function salvarConfiguracao() {
-            const sheetId = document.getElementById('sheetId').value;
-            // Apenas para armazenar o ID da planilha no localStorage, caso o usuário queira usá-lo depois
-            if (sheetId) {
-                localStorage.setItem('googleSheetId', sheetId);
-            }
-            alert('Configuração salva! Clique em "Atualizar Dados" para carregar informações da API Web.');
-        }
-
-
-        // Mantém a função original mudarAba e adiciona a lógica de inicialização
         function mudarAba(aba) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -737,22 +721,21 @@
             atualizarDashboard();
 
             if (aba === 'graficos') {
-                atualizarGraficos(); // Renderiza gráficos apenas quando a aba é ativada
+                atualizarGraficos();
             } else if (aba === 'relatorios') {
                 inicializarFiltrosRelatorio();
-                document.getElementById('relatorioOutput').style.display = 'none'; // Esconde a saída ao entrar
-                document.querySelector('.print-button').style.display = 'none'; // Esconde o botão Imprimir
+                document.getElementById('relatorioOutput').style.display = 'none';
+                document.querySelector('.print-button').style.display = 'none';
             }
         }
 
         function formatarMoeda(valor) {
-            // Converte para float antes de formatar, garantindo que o valor seja tratado corretamente
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(parseFloat(valor) || 0);
         }
 
         function calcularDiasAteVencimento(dataVencimento) {
             const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0); // Zera hora para cálculo correto de dias
+            hoje.setHours(0, 0, 0, 0);
             const vencimento = new Date(dataVencimento);
             vencimento.setHours(0, 0, 0, 0);
             const diff = Math.ceil((vencimento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
@@ -775,7 +758,6 @@
                     alert('Boleto já está marcado como Pago.');
                     return;
                 }
-                // Em um sistema real, aqui você faria uma chamada POST/PUT para o Apps Script
                 boleto.status = 'Pago';
                 alert(`Boleto ${boleto.descricao} marcado como Pago! (Simulação)`);
                 atualizarDashboard();
@@ -791,7 +773,6 @@
                     alert('Entrada inválida.');
                     return;
                 }
-                // Em um sistema real, você faria uma chamada para atualizar o Apps Script
                 item.quantidade = parseInt(item.quantidade) + quantidade;
                 alert(`${quantidade} unidades de ${item.item} adicionadas! Novo total: ${item.quantidade}. (Simulação)`);
                 atualizarDashboard();
@@ -811,7 +792,6 @@
                     alert('Quantidade em estoque insuficiente.');
                     return;
                 }
-                // Em um sistema real, você faria uma chamada para atualizar o Apps Script
                 item.quantidade = parseInt(item.quantidade) - quantidade;
                 alert(`${quantidade} unidades de ${item.item} removidas! Novo total: ${item.quantidade}. (Simulação)`);
                 atualizarDashboard();
@@ -863,7 +843,7 @@
             const totalEPIs = dados.estoque.reduce((sum, e) => sum + parseInt(e.quantidade), 0);
             document.getElementById('episEstoque').textContent = totalEPIs;
 
-            // TABELAS (Ações de Excluir/Entrada/Saída só aparecem aqui)
+            // TABELAS
             let htmlGastos = gerarTabelaGastos(dados.gastos.sort((a, b) => new Date(b.data) - new Date(a.data)), true);
             document.getElementById('tabelaGastos').innerHTML = htmlGastos;
 
@@ -1021,7 +1001,6 @@
         
         // --- PERSISTÊNCIA E FORMS (SIMULADA) ---
         
-        // FUNÇÕES ADICIONAR REGISTRO (MANTIDAS, mas apenas em memória. Em um sistema real, fariam um POST/GET no Apps Script)
         function adicionarRegistro(type, data) {
             switch(type) {
                 case 'gasto':
@@ -1222,7 +1201,6 @@
 
         // --- FUNÇÕES DE GERAÇÃO DE TABELAS PARA RELATÓRIO/DASHBOARD ---
 
-        // Flag 'incluirAcoes' determina se colunas de Ações e o TFOOT devem ser incluídos (dashboard sim, relatorio não)
         function gerarTabelaGastos(gastos, incluirAcoes) {
             let html = '<table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th>' + (incluirAcoes ? '<th>Ações</th>' : '') + '</tr></thead><tbody>';
             let total = 0;
@@ -1346,12 +1324,6 @@
         document.addEventListener('DOMContentLoaded', () => {
              // Tenta carregar dados do Sheets na inicialização
              carregarDados();
-             
-             // Carrega a configuração salva
-             const savedSheetId = localStorage.getItem('googleSheetId');
-             if (savedSheetId) {
-                 document.getElementById('sheetId').value = savedSheetId;
-             }
         });
     </script>
 </body>
