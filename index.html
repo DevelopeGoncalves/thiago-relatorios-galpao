@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Gestão de Obras</title>
+    <title>Dashboard de Gestão de Obras (Firebase)</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -58,7 +59,8 @@
             margin: 5px 0;
         }
 
-        .menu a, .tab {
+        .menu a,
+        .tab {
             display: flex;
             align-items: center;
             padding: 15px 20px;
@@ -70,7 +72,8 @@
             border-left: 5px solid transparent;
         }
 
-        .menu a:hover, .tab:hover {
+        .menu a:hover,
+        .tab:hover {
             background-color: var(--secondary-color);
         }
 
@@ -124,10 +127,17 @@
             border-left: 5px solid var(--primary-color);
         }
 
-        .card.danger { border-left-color: var(--danger-color); }
-        .card.success { border-left-color: var(--success-color); }
-        .card.warning { border-left-color: var(--warning-color); }
+        .card.danger {
+            border-left-color: var(--danger-color);
+        }
 
+        .card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .card.warning {
+            border-left-color: var(--warning-color);
+        }
 
         .card:hover {
             transform: translateY(-5px);
@@ -170,7 +180,8 @@
             text-align: left;
         }
 
-        .data-table th, .data-table td {
+        .data-table th,
+        .data-table td {
             padding: 12px 15px;
             border-bottom: 1px solid #eee;
         }
@@ -204,19 +215,31 @@
             text-align: center;
         }
 
-        .status-vencido, .status-baixo { background-color: var(--danger-color); }
-        .status-proximo { background-color: var(--warning-color); }
-        .status-pago, .status-ok { background-color: var(--success-color); }
+        .status-vencido,
+        .status-baixo {
+            background-color: var(--danger-color);
+        }
+
+        .status-proximo {
+            background-color: var(--warning-color);
+        }
+
+        .status-pago,
+        .status-ok {
+            background-color: var(--success-color);
+        }
 
         /* Forms and Buttons */
-        .form-container, .action-buttons {
+        .form-container,
+        .action-buttons {
             display: flex;
             gap: 15px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
-        .form-container input:not([type="checkbox"]):not([type="radio"]), .form-container select {
+        .form-container input:not([type="checkbox"]):not([type="radio"]),
+        .form-container select {
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -243,15 +266,22 @@
             background-color: var(--secondary-color);
         }
 
-        .btn-success { background-color: var(--success-color); color: white; }
-        .btn-danger { background-color: var(--danger-color); color: white; }
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
 
         .btn-action {
             padding: 5px 10px;
             font-size: 0.8em;
             margin-left: 5px;
         }
-        
+
         /* Gráficos */
         .chart-container {
             background: var(--card-background);
@@ -309,230 +339,344 @@
             display: none;
         }
 
+        /* Estilo para a tela de Login */
+        #login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        #login-container h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        #login-container input,
+        #login-container button {
+            width: 90%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        #login-container button {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         /* Print Styles */
         @media print {
-            body { 
-                background-color: white; 
+            body {
+                background-color: white;
                 display: block;
             }
-            .sidebar, .header, .relatorio-filters, .print-button {
+
+            .sidebar,
+            .header,
+            .relatorio-filters,
+            .print-button {
                 display: none;
             }
+
             .main-content {
                 padding: 0;
             }
+
             .tab-content.active {
                 display: block;
             }
+
             .data-table {
                 box-shadow: none;
                 padding: 0;
             }
+
             .data-table table {
                 border: 1px solid #ccc;
             }
-            .data-table th, .data-table td {
+
+            .data-table th,
+            .data-table td {
                 border: 1px solid #ccc;
             }
+
             .data-table tfoot td {
                 background-color: #f0f0f0 !important;
                 -webkit-print-color-adjust: exact;
                 border-top: 1px solid #ccc;
             }
+
             .status-badge {
                 color: #333 !important;
                 background: none !important;
             }
-            h1, h2, h3 { color: var(--text-color) !important; -webkit-print-color-adjust: exact; }
+
+            h1,
+            h2,
+            h3 {
+                color: var(--text-color) !important;
+                -webkit-print-color-adjust: exact;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+
 <body>
-
-    <div class="sidebar">
-        <div class="logo">🚧 Gestão de Obras</div>
-        <ul class="menu">
-            <li><div class="tab active" onclick="mudarAba('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</div></li>
-            <li><div class="tab" onclick="mudarAba('gastos')"><i class="fas fa-money-bill-wave"></i> Gastos Diários</div></li>
-            <li><div class="tab" onclick="mudarAba('boletos')"><i class="fas fa-receipt"></i> Controle de Boletos</div></li>
-            <li><div class="tab" onclick="mudarAba('estoque')"><i class="fas fa-hard-hat"></i> Estoque EPI</div></li>
-            <li><div class="tab" onclick="mudarAba('materiais')"><i class="fas fa-boxes"></i> Compra de Materiais</div></li>
-            <li><div class="tab" onclick="mudarAba('graficos')"><i class="fas fa-chart-bar"></i> Análise Gráfica</div></li>
-            <li><div class="tab" onclick="mudarAba('relatorios')"><i class="fas fa-file-alt"></i> Gerar Relatórios</div></li>
-        </ul>
-    </div>
-
-    <div class="main-content">
-        <div class="header">
-            <h1 id="currentTitle">Dashboard Principal</h1>
-            <button class="btn btn-primary" onclick="carregarDados()"><i class="fas fa-sync-alt"></i> Atualizar Dados</button>
-        </div>
-
-        <div id="dashboard" class="tab-content active">
-            <div class="cards-grid">
-                <div class="card warning">
-                    <div class="card-title">💸 Gastos Hoje</div>
-                    <div class="card-value" id="gastosHoje">R$ 0,00</div>
-                </div>
-                <div class="card warning">
-                    <div class="card-title">📊 Gastos Mês</div>
-                    <div class="card-value" id="gastosMes">R$ 0,00</div>
-                </div>
-                <div class="card danger">
-                    <div class="card-title">🚨 Boletos Vencidos</div>
-                    <div class="card-value" id="boletosVencidos">0</div>
-                </div>
-                <div class="card success">
-                    <div class="card-title">👷 EPIs em Estoque</div>
-                    <div class="card-value" id="episEstoque">0</div>
-                </div>
-            </div>
-
-            <div class="data-table">
-                <h2>Próximos Vencimentos</h2>
-                <div id="proximosVencimentos">
-                    </div>
-            </div>
-        </div>
-
-        <div id="gastos" class="tab-content">
-            <h2 style="color: var(--secondary-color);">Registro de Gastos</h2>
-            <div class="form-container data-table">
-                <input type="date" id="gastoData" placeholder="Data" value="" required>
-                <input type="text" id="gastoDescricao" placeholder="Descrição do Gasto" required>
-                <select id="gastoCategoria" required>
-                    <option value="">Selecione a Categoria</option>
-                    <option value="Transporte">Transporte</option>
-                    <option value="Alimentação">Alimentação</option>
-                    <option value="Manutenção">Manutenção</option>
-                    <option value="Escritório">Escritório</option>
-                    <option value="Escritório">Combustivel</option>
-                    <option value="Outros">Outros</option>
-                </select>
-                <input type="number" id="gastoValor" placeholder="Valor (R$)" step="0.01" required>
-                <button class="btn btn-primary" onclick="adicionarGasto()"><i class="fas fa-plus"></i> Adicionar Gasto</button>
-            </div>
-            
-            <div class="data-table">
-                <h2>Histórico Detalhado</h2>
-                <div id="tabelaGastos"></div>
-            </div>
-        </div>
-
-        <div id="boletos" class="tab-content">
-            <h2 style="color: var(--secondary-color);">Lançamento de Boletos</h2>
-            <div class="form-container data-table">
-                <input type="text" id="boletoDescricao" placeholder="Descrição do Boleto" required>
-                <input type="number" id="boletoValor" placeholder="Valor (R$)" step="0.01" required>
-                <input type="date" id="boletoVencimento" placeholder="Data de Vencimento" required>
-                <button class="btn btn-primary" onclick="adicionarBoleto()"><i class="fas fa-plus"></i> Adicionar Boleto</button>
-            </div>
-
-            <div class="data-table">
-                <h2>Boletos Pendentes e Pagos</h2>
-                <div id="tabelaBoletos"></div>
-            </div>
-        </div>
-
-        <div id="estoque" class="tab-content">
-            <h2 style="color: var(--secondary-color);">Gerenciamento de EPIs</h2>
-            <div class="form-container data-table">
-                <input type="text" id="epiItem" placeholder="Nome do EPI" required>
-                <select id="epiCategoria" required>
-                    <option value="">Selecione a Categoria</option>
-                    <option value="Proteção">Proteção</option>
-                    <option value="Uniforme">Uniforme</option>
-                    <option value="Ferramenta">Ferramenta</option>
-                </select>
-                <input type="number" id="epiQuantidade" placeholder="Quantidade Inicial" required>
-                <input type="number" id="epiMinimo" placeholder="Estoque Mínimo" required>
-                <button class="btn btn-primary" onclick="adicionarEPI()"><i class="fas fa-plus"></i> Novo EPI</button>
-            </div>
-
-            <div class="data-table">
-                <h2>Estoque Atual e Movimentação</h2>
-                <div id="tabelaEstoque"></div>
-            </div>
-        </div>
-
-        <div id="materiais" class="tab-content">
-            <h2 style="color: var(--secondary-color);">Registro de Compra de Materiais</h2>
-            <div class="form-container data-table">
-                <input type="date" id="materialData" placeholder="Data da Compra" required>
-                <input type="text" id="materialItem" placeholder="Item Comprado (Ex: Cimento, Areia)" required>
-                <input type="number" id="materialQuantidade" placeholder="Quantidade" required>
-                <input type="number" id="materialValor" placeholder="Valor Total (R$)" step="0.01" required>
-                <input type="text" id="materialFornecedor" placeholder="Fornecedor" required>
-                <button class="btn btn-primary" onclick="adicionarMaterial()"><i class="fas fa-plus"></i> Registrar Compra</button>
-            </div>
-
-            <div class="data-table">
-                <h2>Histórico de Compras</h2>
-                <div id="tabelaMateriais"></div>
-            </div>
-        </div>
-
-        <div id="graficos" class="tab-content">
-            <h2 style="color: var(--secondary-color);">Visualização de Dados</h2>
-            
-            <div class="chart-grid">
-                <div class="chart-container">
-                    <h3>Gastos por Categoria (Mês Atual)</h3>
-                    <canvas id="gastosPorCategoriaChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>Itens de Estoque por Status</h3>
-                    <canvas id="estoqueStatusChart"></canvas>
-                </div>
-            </div>
-
-            <div class="chart-grid" style="margin-top: 20px;">
-                <div class="chart-container">
-                    <h3>Total de Compras de Materiais (Últimos 6 meses)</h3>
-                    <canvas id="materiaisPorMesChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>Gastos Diários (Últimos 30 dias)</h3>
-                    <canvas id="gastosDiariosChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div id="relatorios" class="tab-content">
-            <h2 style="color: var(--secondary-color);">Personalizar Relatório</h2>
-            
-            <div class="relatorio-filters">
-                <div>
-                    <label>Data Inicial:</label>
-                    <input type="date" id="relatorioDataInicio" required>
-                </div>
-                <div>
-                    <label>Data Final:</label>
-                    <input type="date" id="relatorioDataFim" required>
-                </div>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" id="checkResumo" checked> Resumo Financeiro</label>
-                    <label><input type="checkbox" id="checkGastos" checked> Gastos Diários</label>
-                    <label><input type="checkbox" id="checkBoletos" checked> Controle de Boletos</label>
-                    <label><input type="checkbox" id="checkEstoque" checked> Estoque de EPIs</label>
-                    <label><input type="checkbox" id="checkMateriais" checked> Compra de Materiais</label>
-                </div>
-                <button class="btn btn-primary" onclick="gerarRelatorio()"><i class="fas fa-file-export"></i> Gerar Relatório</button>
-            </div>
-            
-            <div id="relatorioOutput" class="data-table" style="display: none;">
-                </div>
-        </div>
-    </div>
     
-    <button class="btn btn-success print-button" onclick="window.print()">
-        <i class="fas fa-print"></i> Imprimir Relatório
-    </button>
+    <div id="login-container">
+        <h2>🚧 Gestão de Obras - Login</h2>
+        <input type="email" id="email-login" placeholder="E-mail" required>
+        <input type="password" id="senha-login" placeholder="Senha" required>
+        <button onclick="fazerLogin()">Entrar</button>
+        <p id="login-erro" style="color: var(--danger-color); font-size: 0.9em;"></p>
+    </div>
+
+    <div id="dashboard-container" style="display: none; width: 100%;">
+        
+        <div class="sidebar">
+            <div class="logo">🚧 Gestão de Obras</div>
+            <ul class="menu">
+                <li>
+                    <div class="tab active" onclick="mudarAba('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard
+                    </div>
+                </li>
+                <li>
+                    <div class="tab" onclick="mudarAba('gastos')"><i class="fas fa-money-bill-wave"></i> Gastos Diários
+                    </div>
+                </li>
+                <li>
+                    <div class="tab" onclick="mudarAba('boletos')"><i class="fas fa-receipt"></i> Controle de Boletos</div>
+                </li>
+                <li>
+                    <div class="tab" onclick="mudarAba('estoque')"><i class="fas fa-hard-hat"></i> Estoque EPI</div>
+                </li>
+                <li>
+                    <div class="tab" onclick="mudarAba('materiais')"><i class="fas fa-boxes"></i> Compra de Materiais</div>
+                </li>
+                <li>
+                    <div class="tab" onclick="mudarAba('graficos')"><i class="fas fa-chart-bar"></i> Análise Gráfica</div>
+                </li>
+                <li>
+                    <div class="tab" onclick="mudarAba('relatorios')"><i class="fas fa-file-alt"></i> Gerar Relatórios</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1 id="currentTitle">Dashboard Principal</h1>
+                <div>
+                    <button class="btn btn-danger" onclick="fazerLogout()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+                    <button class="btn btn-primary" onclick="carregarDadosFirebase()"><i class="fas fa-sync-alt"></i> Atualizar Dados</button>
+                </div>
+            </div>
+
+            <div id="dashboard" class="tab-content active">
+                <div class="cards-grid">
+                    <div class="card warning">
+                        <div class="card-title">💸 Gastos Hoje</div>
+                        <div class="card-value" id="gastosHoje">R$ 0,00</div>
+                    </div>
+                    <div class="card warning">
+                        <div class="card-title">📊 Gastos Mês</div>
+                        <div class="card-value" id="gastosMes">R$ 0,00</div>
+                    </div>
+                    <div class="card danger">
+                        <div class="card-title">🚨 Boletos Vencidos</div>
+                        <div class="card-value" id="boletosVencidos">0</div>
+                    </div>
+                    <div class="card success">
+                        <div class="card-title">👷 EPIs em Estoque</div>
+                        <div class="card-value" id="episEstoque">0</div>
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <h2>Próximos Vencimentos</h2>
+                    <div id="proximosVencimentos">
+                    </div>
+                </div>
+            </div>
+
+            <div id="gastos" class="tab-content">
+                <h2 style="color: var(--secondary-color);">Registro de Gastos</h2>
+                <div class="form-container data-table">
+                    <input type="date" id="gastoData" placeholder="Data" value="" required>
+                    <input type="text" id="gastoDescricao" placeholder="Descrição do Gasto" required>
+                    <select id="gastoCategoria" required>
+                        <option value="">Selecione a Categoria</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Alimentação">Alimentação</option>
+                        <option value="Manutenção">Manutenção</option>
+                        <option value="Escritório">Escritório</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                    <input type="number" id="gastoValor" placeholder="Valor (R$)" step="0.01" required>
+                    <button class="btn btn-primary" onclick="adicionarGasto()"><i class="fas fa-plus"></i> Adicionar
+                        Gasto</button>
+                </div>
+
+                <div class="data-table">
+                    <h2>Histórico Detalhado</h2>
+                    <div id="tabelaGastos"></div>
+                </div>
+            </div>
+
+            <div id="boletos" class="tab-content">
+                <h2 style="color: var(--secondary-color);">Lançamento de Boletos</h2>
+                <div class="form-container data-table">
+                    <input type="text" id="boletoDescricao" placeholder="Descrição do Boleto" required>
+                    <input type="number" id="boletoValor" placeholder="Valor (R$)" step="0.01" required>
+                    <input type="date" id="boletoVencimento" placeholder="Data de Vencimento" required>
+                    <button class="btn btn-primary" onclick="adicionarBoleto()"><i class="fas fa-plus"></i> Adicionar
+                        Boleto</button>
+                </div>
+
+                <div class="data-table">
+                    <h2>Boletos Pendentes e Pagos</h2>
+                    <div id="tabelaBoletos"></div>
+                </div>
+            </div>
+
+            <div id="estoque" class="tab-content">
+                <h2 style="color: var(--secondary-color);">Gerenciamento de EPIs</h2>
+                <div class="form-container data-table">
+                    <input type="text" id="epiItem" placeholder="Nome do EPI" required>
+                    <select id="epiCategoria" required>
+                        <option value="">Selecione a Categoria</option>
+                        <option value="Proteção">Proteção</option>
+                        <option value="Uniforme">Uniforme</option>
+                        <option value="Ferramenta">Ferramenta</option>
+                    </select>
+                    <input type="number" id="epiQuantidade" placeholder="Quantidade Inicial" required>
+                    <input type="number" id="epiMinimo" placeholder="Estoque Mínimo" required>
+                    <button class="btn btn-primary" onclick="adicionarEPI()"><i class="fas fa-plus"></i> Novo EPI</button>
+                </div>
+
+                <div class="data-table">
+                    <h2>Estoque Atual e Movimentação</h2>
+                    <div id="tabelaEstoque"></div>
+                </div>
+            </div>
+
+            <div id="materiais" class="tab-content">
+                <h2 style="color: var(--secondary-color);">Registro de Compra de Materiais</h2>
+                <div class="form-container data-table">
+                    <input type="date" id="materialData" placeholder="Data da Compra" required>
+                    <input type="text" id="materialItem" placeholder="Item Comprado (Ex: Cimento, Areia)" required>
+                    <input type="number" id="materialQuantidade" placeholder="Quantidade" required>
+                    <input type="number" id="materialValor" placeholder="Valor Total (R$)" step="0.01" required>
+                    <input type="text" id="materialFornecedor" placeholder="Fornecedor" required>
+                    <button class="btn btn-primary" onclick="adicionarMaterial()"><i class="fas fa-plus"></i> Registrar
+                        Compra</button>
+                </div>
+
+                <div class="data-table">
+                    <h2>Histórico de Compras</h2>
+                    <div id="tabelaMateriais"></div>
+                </div>
+            </div>
+
+            <div id="graficos" class="tab-content">
+                <h2 style="color: var(--secondary-color);">Visualização de Dados</h2>
+
+                <div class="chart-grid">
+                    <div class="chart-container">
+                        <h3>Gastos por Categoria (Mês Atual)</h3>
+                        <canvas id="gastosPorCategoriaChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Itens de Estoque por Status</h3>
+                        <canvas id="estoqueStatusChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-grid" style="margin-top: 20px;">
+                    <div class="chart-container">
+                        <h3>Total de Compras de Materiais (Últimos 6 meses)</h3>
+                        <canvas id="materiaisPorMesChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Gastos Diários (Últimos 30 dias)</h3>
+                        <canvas id="gastosDiariosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="relatorios" class="tab-content">
+                <h2 style="color: var(--secondary-color);">Personalizar Relatório</h2>
+
+                <div class="relatorio-filters">
+                    <div>
+                        <label>Data Inicial:</label>
+                        <input type="date" id="relatorioDataInicio" required>
+                    </div>
+                    <div>
+                        <label>Data Final:</label>
+                        <input type="date" id="relatorioDataFim" required>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="checkResumo" checked> Resumo Financeiro</label>
+                        <label><input type="checkbox" id="checkGastos" checked> Gastos Diários</label>
+                        <label><input type="checkbox" id="checkBoletos" checked> Controle de Boletos</label>
+                        <label><input type="checkbox" id="checkEstoque" checked> Estoque de EPIs</label>
+                        <label><input type="checkbox" id="checkMateriais" checked> Compra de Materiais</label>
+                    </div>
+                    <button class="btn btn-primary" onclick="gerarRelatorio()"><i class="fas fa-file-export"></i> Gerar
+                        Relatório</button>
+                </div>
+
+                <div id="relatorioOutput" class="data-table" style="display: none;">
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-success print-button" onclick="window.print()">
+            <i class="fas fa-print"></i> Imprimir Relatório
+        </button>
+
+    </div> 
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <script>
-        // URL da API WEB do Google Apps Script - SUBSTITUA ESTA URL PELA SUA!
-        const webAppUrl = "https://script.google.com/macros/s/AKfycbzirLFf7ExY9FWqDymC2AD40Okyz9tNatz_lnZPOzU8UM69od8lpDHcOStp2OIvULy7/exec";
+        // 🚨 VERIFIQUE SE ESTE OBJETO TEM SEUS VALORES REAIS DO FIREBASE!
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmyfDdY6K3yszkJHm8QI724pUD3znFRSs",
+            authDomain: "thiago-relatorio-galpao.firebaseapp.com",
+            projectId: "thiago-relatorio-galpao",
+            storageBucket: "thiago-relatorio-galpao.firebasestorage.app",
+            messagingSenderId: "111920470310",
+            appId: "1:111920470310:web:bb14f0e8497cad4ae809e7",
+            measurementId: "G-ZSDYBWSHK7"
+        };
+        
+        // Inicialização do Firebase e Instâncias de Serviços
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(); 
+        const auth = firebase.auth(); 
+
+        // Nomes das Coleções no Firestore
+        const colecoes = {
+            gastos: 'gastos',
+            boletos: 'boletos',
+            estoque: 'estoque',
+            materiais: 'materiais'
+        };
 
         let dados = {
             gastos: [],
@@ -543,106 +687,346 @@
 
         let chartInstances = {};
 
-        function carregarDadosExemplo() {
-            // Dados de Exemplo (Usados em caso de falha na API)
-            const hoje = new Date().toISOString().split('T')[0];
-            const dataProximo = new Date();
-            dataProximo.setDate(dataProximo.getDate() + 3);
-            const dataProximoStr = dataProximo.toISOString().split('T')[0];
-            const dataVencido = new Date();
-            dataVencido.setDate(dataVencido.getDate() - 5);
-            const dataVencidoStr = dataVencido.toISOString().split('T')[0];
-            
-            dados = {
-                gastos: [
-                    { data: hoje, descricao: 'Combustível', valor: 250.00, categoria: 'Transporte' },
-                    { data: hoje, descricao: 'Almoço equipe', valor: 120.00, categoria: 'Alimentação' },
-                    { data: '2025-11-22', descricao: 'Material escritório', valor: 85.50, categoria: 'Escritório' },
-                    { data: '2025-11-20', descricao: 'Pedágio', valor: 40.00, categoria: 'Transporte' },
-                    { data: '2025-11-18', descricao: 'Reparo máquina', valor: 550.00, categoria: 'Manutenção' },
-                    { data: '2025-11-15', descricao: 'Café da manhã', valor: 50.00, categoria: 'Alimentação' }
-                ],
-                boletos: [
-                    { id: 1, descricao: 'Energia Elétrica', valor: 450.00, vencimento: dataProximoStr, status: 'Pendente', dataPagamento: '', meioPagamento: '' },
-                    { id: 2, descricao: 'Água', valor: 120.00, vencimento: dataVencidoStr, status: 'Pendente', dataPagamento: '', meioPagamento: '' },
-                    { id: 3, descricao: 'Internet', valor: 199.90, vencimento: '2025-12-05', status: 'Pendente', dataPagamento: '', meioPagamento: '' },
-                    { id: 4, descricao: 'Aluguel', valor: 2500.00, vencimento: '2025-10-01', status: 'Pago', dataPagamento: '2025-09-30', meioPagamento: 'Pix Santander' }
-                ],
-                estoque: [
-                    { id: 1, item: 'Capacete', quantidade: 45, minimo: 20, categoria: 'Proteção', dataUltimaEntrada: '2025-11-01', dataUltimaSaida: '2025-11-20' },
-                    { id: 2, item: 'Luva', quantidade: 120, minimo: 50, categoria: 'Proteção', dataUltimaEntrada: '2025-11-10', dataUltimaSaida: hoje },
-                    { id: 3, item: 'Óculos de Proteção', quantidade: 15, minimo: 30, categoria: 'Proteção', dataUltimaEntrada: '2025-10-25', dataUltimaSaida: '2025-11-22' }
-                ],
-                materiais: [
-                    { data: '2025-11-20', item: 'Cimento', quantidade: 50, valor: 1500.00, fornecedor: 'Constrular' },
-                    { data: '2025-11-18', item: 'Areia', quantidade: 100, valor: 800.00, fornecedor: 'Areião' }
-                ]
-            };
-            
-            dados.boletos.forEach((b, i) => b.id = b.id || (i + 1));
-            dados.estoque.forEach((e, i) => e.id = e.id || (i + 1));
+        // ----------------------------------------------------------------------
+        // --- FUNÇÕES DE AUTENTICAÇÃO E CONTROLE DE ACESSO ---
+        // ----------------------------------------------------------------------
 
-            atualizarDashboard();
-        }
+        function fazerLogin() {
+            const email = document.getElementById('email-login').value;
+            const senha = document.getElementById('senha-login').value;
+            const erroDisplay = document.getElementById('login-erro');
+            erroDisplay.textContent = 'Aguarde...';
 
-        function carregarDados() {
-            if (!webAppUrl || webAppUrl.includes("AKfycbyGYfUdoyPExuRrnTds6ZbwLNpc13K8bsgPh4K-ME2zWUmomC8j45TjvwnRsGKRF_pM")) {
-                alert('A URL da API Web do Google Apps Script não está configurada ou é a URL de exemplo! Carregando dados de exemplo.');
-                return carregarDadosExemplo(); 
-            }
-
-            // Requisição Fetch para buscar os dados na API Web
-            fetch(webAppUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Erro de rede: ${response.status}`);
-                    }
-                    return response.json();
+            auth.signInWithEmailAndPassword(email, senha)
+                .then((userCredential) => {
+                    erroDisplay.textContent = '';
                 })
-                .then(data => {
-                    if (data.error) {
-                        alert('Erro na API Apps Script: ' + data.error);
-                        return;
+                .catch((error) => {
+                    let mensagemErro = "Erro desconhecido. Verifique e-mail e senha.";
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                        mensagemErro = "E-mail ou senha inválidos.";
+                    } else if (error.code === 'auth/invalid-email') {
+                        mensagemErro = "Formato de e-mail inválido.";
                     }
-                    
-                    dados.gastos = data.gastos || [];
-                    // Adicionado valores padrão para novas propriedades caso não venham da API
-                    dados.boletos = (data.boletos || []).map(b => ({
-                        ...b,
-                        dataPagamento: b.dataPagamento || '',
-                        meioPagamento: b.meioPagamento || ''
-                    }));
-                    dados.estoque = (data.estoque || []).map(e => ({
-                        ...e,
-                        dataUltimaEntrada: e.dataUltimaEntrada || '',
-                        dataUltimaSaida: e.dataUltimaSaida || ''
-                    }));
-                    dados.materiais = data.materiais || [];
-
-                    alert('Dados atualizados com sucesso do Google Sheets! (Via Apps Script)');
-                    atualizarDashboard();
-                    
-                    const abaAtiva = document.querySelector('.tab-content.active').id;
-                    if (abaAtiva === 'graficos') atualizarGraficos();
-                    if (abaAtiva === 'relatorios') gerarRelatorio();
-                })
-                .catch(error => {
-                    console.error('Falha ao carregar dados:', error);
-                    alert(`Falha ao conectar com a API Web. Carregando dados de exemplo. Detalhes: ${error.message}.`);
-                    carregarDadosExemplo(); 
+                    erroDisplay.textContent = mensagemErro;
+                    console.error("Erro de login:", error);
                 });
         }
+
+        function fazerLogout() {
+            auth.signOut()
+                .then(() => {
+                })
+                .catch((error) => {
+                    console.error("Erro ao fazer logout:", error);
+                });
+        }
+        
+        auth.onAuthStateChanged((user) => {
+            const loginContainer = document.getElementById('login-container');
+            const dashboardContainer = document.getElementById('dashboard-container');
+            const erroDisplay = document.getElementById('login-erro');
+            
+            if (user) {
+                loginContainer.style.display = 'none';      
+                dashboardContainer.style.display = 'flex'; 
+                erroDisplay.textContent = '';
+                carregarDadosFirebase(); 
+            } else {
+                loginContainer.style.display = 'flex';      
+                dashboardContainer.style.display = 'none';   
+            }
+        });
+
+        // ----------------------------------------------------------------------
+        // --- FUNÇÕES DE COMUNICAÇÃO COM O FIREBASE FIRESTORE ---
+        // ----------------------------------------------------------------------
+
+        async function carregarDadosFirebase() {
+            console.log('Carregando dados do Firestore...');
+
+            const atualizarBtn = document.querySelector('.header button.btn-primary');
+            atualizarBtn.disabled = true;
+            atualizarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
+
+            try {
+                const promises = Object.keys(colecoes).map(async key => {
+                    const collectionName = colecoes[key];
+                    const snapshot = await db.collection(collectionName).get();
+                    dados[key] = snapshot.docs.map(doc => ({ 
+                        id_firestore: doc.id, 
+                        ...doc.data() 
+                    }));
+                });
+
+                await Promise.all(promises);
+
+                atualizarDashboard();
+                const abaAtual = document.querySelector('.tab-content.active') ? document.querySelector('.tab-content.active').id : 'dashboard';
+                mudarAba(abaAtual); 
+
+            } catch (error) {
+                console.error("Erro ao carregar dados do Firebase:", error);
+                alert(`Falha ao carregar dados. Verifique suas Regras de Segurança e conexão.`);
+                fazerLogout();
+            } finally {
+                atualizarBtn.disabled = false;
+                atualizarBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Dados';
+            }
+        }
+
+        async function adicionarGasto() {
+            const data = document.getElementById('gastoData').value;
+            const descricao = document.getElementById('gastoDescricao').value;
+            const categoria = document.getElementById('gastoCategoria').value;
+            const valor = parseFloat(document.getElementById('gastoValor').value);
+
+            if (!data || !descricao || !categoria || isNaN(valor) || valor <= 0) {
+                alert('Preencha todos os campos corretamente para adicionar o gasto.');
+                return;
+            }
+
+            const novoGasto = {
+                'Data': data,
+                'Descrição': descricao,
+                'Categoria': categoria,
+                'Valor': valor,
+                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection(colecoes.gastos).add(novoGasto);
+                alert(`Sucesso: Gasto adicionado.`);
+                
+                document.getElementById('gastoData').value = new Date().toISOString().split('T')[0];
+                document.getElementById('gastoDescricao').value = '';
+                document.getElementById('gastoCategoria').value = '';
+                document.getElementById('gastoValor').value = '';
+
+                await carregarDadosFirebase();
+            } catch (error) {
+                console.error("Erro ao adicionar gasto:", error);
+                alert(`Falha ao salvar no Firebase. Detalhes: ${error.message}`);
+            }
+        }
+        
+        async function adicionarBoleto() {
+            const descricao = document.getElementById('boletoDescricao').value;
+            const valor = parseFloat(document.getElementById('boletoValor').value);
+            const vencimento = document.getElementById('boletoVencimento').value;
+
+            if (!descricao || !vencimento || isNaN(valor) || valor <= 0) {
+                alert('Preencha todos os campos corretamente para adicionar o boleto.');
+                return;
+            }
+
+            const novoBoleto = {
+                'Descrição': descricao,
+                'Valor': valor,
+                'Vencimento': vencimento,
+                'Status': 'Pendente',
+                "Data Pagamento": '',
+                "Meio Pagamento": '',
+                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp() 
+            };
+
+            try {
+                await db.collection(colecoes.boletos).add(novoBoleto);
+                alert(`Sucesso: Boleto adicionado.`);
+
+                document.getElementById('boletoDescricao').value = '';
+                document.getElementById('boletoValor').value = '';
+                document.getElementById('boletoVencimento').value = '';
+                
+                await carregarDadosFirebase();
+            } catch (error) {
+                console.error("Erro ao adicionar boleto:", error);
+                alert(`Falha ao salvar no Firebase. Detalhes: ${error.message}`);
+            }
+        }
+
+        async function darBaixaBoleto(id_firestore, status) {
+            const boleto = dados.boletos.find(b => b.id_firestore === id_firestore);
+            if (!boleto) {
+                alert('Boleto não encontrado para atualização.');
+                return;
+            }
+
+            let dataPagamento = '';
+            let meioPagamento = '';
+            let novoStatus = status;
+
+            if (status === 'Pago') {
+                dataPagamento = new Date().toISOString().split('T')[0];
+                meioPagamento = prompt("Informe o Meio de Pagamento (Ex: Pix, TED, Dinheiro):");
+
+                if (!meioPagamento) {
+                    alert('Operação cancelada. O meio de pagamento é obrigatório para dar baixa.');
+                    return;
+                }
+            } else {
+                novoStatus = 'Pendente';
+                dataPagamento = ''; 
+                meioPagamento = ''; 
+            }
+
+            const dataAtualizacao = {
+                'Status': novoStatus,
+                'Data Pagamento': dataPagamento,
+                'Meio Pagamento': meioPagamento,
+                'AtualizadoEm': firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection(colecoes.boletos).doc(id_firestore).update(dataAtualizacao);
+                alert('Boleto atualizado com sucesso no Firebase!');
+                
+                await carregarDadosFirebase();
+            } catch (error) {
+                console.error("Erro ao dar baixa no boleto:", error);
+                alert(`Falha ao atualizar no Firebase. Detalhes: ${error.message}`);
+            }
+        }
+        
+        async function adicionarEPI() {
+            const item = document.getElementById('epiItem').value;
+            const categoria = document.getElementById('epiCategoria').value;
+            const quantidade = parseInt(document.getElementById('epiQuantidade').value);
+            const minimo = parseInt(document.getElementById('epiMinimo').value);
+            const hoje = new Date().toISOString().split('T')[0];
+
+            if (!item || !categoria || isNaN(quantidade) || quantidade < 0 || isNaN(minimo) || minimo < 0) {
+                alert('Preencha todos os campos corretamente para adicionar o EPI.');
+                return;
+            }
+
+            const novoEPI = {
+                'Item': item,
+                'Categoria': categoria,
+                'Quantidade': quantidade,
+                'Mínimo': minimo,
+                'Última Entrada': hoje,
+                'Última Saída': 'N/A',
+                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp() 
+            };
+
+            try {
+                await db.collection(colecoes.estoque).add(novoEPI);
+                alert(`Sucesso: Novo EPI adicionado.`);
+
+                document.getElementById('epiItem').value = '';
+                document.getElementById('epiCategoria').value = '';
+                document.getElementById('epiQuantidade').value = '';
+                document.getElementById('epiMinimo').value = '';
+                
+                await carregarDadosFirebase();
+            } catch (error) {
+                console.error("Erro ao adicionar EPI:", error);
+                alert(`Falha ao salvar no Firebase. Detalhes: ${error.message}`);
+            }
+        }
+        
+        async function adicionarMovimentacaoEPI(id_firestore, tipo) {
+            const epi = dados.estoque.find(e => e.id_firestore === id_firestore);
+            if (!epi) {
+                alert('EPI não encontrado para movimentação.');
+                return;
+            }
+
+            const hoje = new Date().toISOString().split('T')[0];
+            const quantidadeMovimentacao = parseInt(prompt(`Insira a quantidade de ${tipo === 'entrada' ? 'ENTRADA' : 'SAÍDA'} para o item "${epi.Item}":`));
+
+            if (isNaN(quantidadeMovimentacao) || quantidadeMovimentacao <= 0) {
+                alert('Quantidade inválida ou não informada.');
+                return;
+            }
+
+            let novaQuantidade = parseInt(epi.Quantidade);
+            let campoData = '';
+
+            if (tipo === 'saida') {
+                if (novaQuantidade - quantidadeMovimentacao < 0) {
+                    alert(`Não é possível dar saída de ${quantidadeMovimentacao}. Estoque atual: ${novaQuantidade}`);
+                    return;
+                }
+                novaQuantidade -= quantidadeMovimentacao;
+                campoData = 'Última Saída';
+            } else { 
+                novaQuantidade += quantidadeMovimentacao;
+                campoData = 'Última Entrada';
+            }
+
+            const dataAtualizacao = {
+                'Quantidade': novaQuantidade,
+                [campoData]: hoje,
+                'AtualizadoEm': firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection(colecoes.estoque).doc(id_firestore).update(dataAtualizacao);
+                alert('Estoque atualizado com sucesso no Firebase!');
+                
+                await carregarDadosFirebase();
+            } catch (error) {
+                console.error("Erro ao movimentar EPI:", error);
+                alert(`Falha ao atualizar no Firebase. Detalhes: ${error.message}`);
+            }
+        }
+
+        async function adicionarMaterial() {
+            const data = document.getElementById('materialData').value;
+            const item = document.getElementById('materialItem').value;
+            const quantidade = parseFloat(document.getElementById('materialQuantidade').value);
+            const valor = parseFloat(document.getElementById('materialValor').value);
+            const fornecedor = document.getElementById('materialFornecedor').value;
+
+            if (!data || !item || !fornecedor || isNaN(quantidade) || quantidade <= 0 || isNaN(valor) || valor <= 0) {
+                alert('Preencha todos os campos corretamente para registrar a compra de material.');
+                return;
+            }
+
+            const novoMaterial = {
+                'Data': data,
+                'Item': item,
+                'Quantidade': quantidade,
+                'Valor Total': valor,
+                'Fornecedor': fornecedor,
+                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp() 
+            };
+
+            try {
+                await db.collection(colecoes.materiais).add(novoMaterial);
+                alert(`Sucesso: Compra de material registrada.`);
+
+                document.getElementById('materialData').value = new Date().toISOString().split('T')[0];
+                document.getElementById('materialItem').value = '';
+                document.getElementById('materialQuantidade').value = '';
+                document.getElementById('materialValor').value = '';
+                document.getElementById('materialFornecedor').value = '';
+                
+                await carregarDadosFirebase();
+            } catch (error) {
+                console.error("Erro ao adicionar material:", error);
+                alert(`Falha ao salvar no Firebase. Detalhes: ${error.message}`);
+            }
+        }
+
+        // ----------------------------------------------------------------------
+        // --- FUNÇÕES DE LÓGICA E UI (FORMATADORAS, MUDAR ABA, TABELAS, etc.) ---
+        // ----------------------------------------------------------------------
 
         function mudarAba(aba) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
+
             const target = event ? event.target.closest('.tab') : document.querySelector(`.tab[onclick*="${aba}"]`);
             if (target) target.classList.add('active');
-            document.getElementById(aba).classList.add('active');
             
+            const content = document.getElementById(aba);
+            if (content) content.classList.add('active');
+
             document.getElementById('currentTitle').textContent = target ? target.textContent.trim() : 'Dashboard Principal';
-            document.querySelector('.print-button').style.display = 'none';
+            document.querySelector('.print-button').style.display = (aba === 'relatorios' && document.getElementById('relatorioOutput').style.display !== 'none') ? 'block' : 'none';
 
             atualizarDashboard();
 
@@ -654,6 +1038,7 @@
             else if (aba === 'relatorios') {
                 inicializarFiltrosRelatorio();
                 document.getElementById('relatorioOutput').style.display = 'none';
+                document.querySelector('.print-button').style.display = 'none';
             }
         }
 
@@ -665,7 +1050,7 @@
             if (!data || data === 'N/A') return 'N/A';
             try {
                 const d = new Date(data + 'T00:00:00');
-                if (isNaN(d)) return data;
+                if (isNaN(d.getTime())) return data;
                 return d.toLocaleDateString('pt-BR');
             } catch {
                 return data;
@@ -675,7 +1060,7 @@
         function calcularDiasAteVencimento(dataVencimento) {
             const hoje = new Date();
             hoje.setHours(0, 0, 0, 0);
-            const vencimento = new Date(dataVencimento);
+            const vencimento = new Date(dataVencimento + 'T00:00:00');
             vencimento.setHours(0, 0, 0, 0);
             const diff = Math.ceil((vencimento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
             return diff;
@@ -683,707 +1068,637 @@
 
         function getStatusBoleto(dataVencimento, statusAtual) {
             if (statusAtual === 'Pago') return { classe: 'status-pago', texto: 'Pago' };
+            if (!dataVencimento) return { classe: 'status-ok', texto: 'Pendente' };
 
             const dias = calcularDiasAteVencimento(dataVencimento);
-            if (dias < 0) return { classe: 'status-vencido', texto: 'Vencido' };
-            if (dias <= 7) return { classe: 'status-proximo', texto: `${dias} dias` };
+            if (dias < 0) return { classe: 'status-vencido', texto: `Vencido há ${Math.abs(dias)} dias` };
+            if (dias <= 7) return { classe: 'status-proximo', texto: `Vence em ${dias} dias` };
             return { classe: 'status-ok', texto: 'Pendente' };
         }
 
-        // --- MODIFICAÇÃO BOLETOS: Coletar Meio de Pagamento ---
-        function marcarBoletoPago(id) {
-            const boleto = dados.boletos.find(b => b.id === id);
-            if (boleto) {
-                if (boleto.status === 'Pago') {
-                    alert('Boleto já está marcado como Pago.');
-                    return;
-                }
-
-                const hoje = new Date().toISOString().split('T')[0];
-                
-                const meio = prompt(`Qual o meio de pagamento para "${boleto.descricao}" (Ex: Pix, Débito, Santander)?`);
-                
-                if (!meio || meio.trim() === '') {
-                    alert('Meio de pagamento obrigatório para registrar o pagamento.');
-                    return;
-                }
-
-                boleto.status = 'Pago';
-                boleto.dataPagamento = hoje;
-                boleto.meioPagamento = meio.trim();
-                
-                alert(`Boleto ${boleto.descricao} marcado como Pago via ${meio.trim()} em ${formatarData(hoje)}! (Simulação)`);
-                
-                atualizarDashboard();
-                montarTabelaBoletos(dados.boletos, 'tabelaBoletos');
-                atualizarGraficos();
-            }
-        }
-
-        // --- MODIFICAÇÃO ESTOQUE: Registrar Data de Entrada ---
-        function entradaEstoque(id) {
-            const item = dados.estoque.find(e => e.id === id);
-            if (item) {
-                const quantidade = parseInt(prompt(`Quantas unidades de ${item.item} estão entrando no estoque?`));
-                if (isNaN(quantidade) || quantidade <= 0) {
-                    alert('Entrada inválida.');
-                    return;
-                }
-                item.quantidade = parseInt(item.quantidade) + quantidade;
-                item.dataUltimaEntrada = new Date().toISOString().split('T')[0];
-                
-                alert(`${quantidade} unidades de ${item.item} adicionadas! Novo total: ${item.quantidade}. (Simulação)`);
-                
-                atualizarDashboard();
-                montarTabelaEstoque(dados.estoque, 'tabelaEstoque');
-                atualizarGraficos();
-            }
-        }
-
-        // --- MODIFICAÇÃO ESTOQUE: Registrar Data de Saída ---
-        function saidaEstoque(id) {
-            const item = dados.estoque.find(e => e.id === id);
-            if (item) {
-                const quantidade = parseInt(prompt(`Quantas unidades de ${item.item} estão saindo do estoque?`));
-                if (isNaN(quantidade) || quantidade <= 0) {
-                    alert('Saída inválida.');
-                    return;
-                }
-                if (item.quantidade < quantidade) {
-                    alert('Quantidade em estoque insuficiente.');
-                    return;
-                }
-                item.quantidade = parseInt(item.quantidade) - quantidade;
-                item.dataUltimaSaida = new Date().toISOString().split('T')[0];
-                
-                alert(`${quantidade} unidades de ${item.item} removidas! Novo total: ${item.quantidade}. (Simulação)`);
-                
-                atualizarDashboard();
-                montarTabelaEstoque(dados.estoque, 'tabelaEstoque');
-                atualizarGraficos();
-            }
+        function getStatusEstoque(quantidade, minimo) {
+            if (quantidade <= 0) return { classe: 'status-vencido', texto: 'Esgotado' };
+            if (quantidade < minimo) return { classe: 'status-baixo', texto: 'Baixo' };
+            return { classe: 'status-ok', texto: 'OK' };
         }
 
         function atualizarDashboard() {
-            // GASTOS
             const hoje = new Date().toISOString().split('T')[0];
-            const mesAtual = new Date().getMonth();
+            const mesAtual = new Date().toISOString().substring(0, 7); 
 
-            const gastosHoje = dados.gastos
-                .filter(g => g.data === hoje)
-                .reduce((sum, g) => sum + parseFloat(g.valor), 0);
-            document.getElementById('gastosHoje').textContent = formatarMoeda(gastosHoje);
-
-            const gastosMes = dados.gastos
-                .filter(g => new Date(g.data + 'T00:00:00').getMonth() === mesAtual)
-                .reduce((sum, g) => sum + parseFloat(g.valor), 0);
-            document.getElementById('gastosMes').textContent = formatarMoeda(gastosMes);
-
-            // BOLETOS
-            const boletosVencidos = dados.boletos.filter(b => b.status !== 'Pago' && calcularDiasAteVencimento(b.vencimento) < 0).length;
-            document.getElementById('boletosVencidos').textContent = boletosVencidos;
-
-            const proximosBoletos = dados.boletos
-                .filter(b => b.status !== 'Pago')
-                .sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento))
-                .slice(0, 5);
-
-            let htmlVencimentos = '<table><thead><tr><th>Descrição</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
-            proximosBoletos.forEach(b => {
-                const status = getStatusBoleto(b.vencimento, b.status);
-                htmlVencimentos += `
-                    <tr>
-                        <td>${b.descricao}</td>
-                        <td>${formatarMoeda(b.valor)}</td>
-                        <td>${formatarData(b.vencimento)}</td>
-                        <td><span class="status-badge ${status.classe}">${status.texto}</span></td>
-                        <td>${b.status !== 'Pago' ? `<button class="btn-success btn-action" onclick="marcarBoletoPago(${b.id})">Pagar</button>` : ''}</td>
-                    </tr>
-                `;
+            let totalHoje = 0;
+            let totalMes = 0;
+            dados.gastos.forEach(g => {
+                const valor = parseFloat(g.Valor) || 0;
+                if (g.Data === hoje) totalHoje += valor;
+                if (g.Data && g.Data.substring(0, 7) === mesAtual) totalMes += valor;
             });
-            htmlVencimentos += '</tbody></table>';
-            document.getElementById('proximosVencimentos').innerHTML = proximosBoletos.length > 0 ? htmlVencimentos : '<p style="text-align: center; color: #888;">Nenhum boleto pendente ou próximo do vencimento.</p>';
+            document.getElementById('gastosHoje').textContent = formatarMoeda(totalHoje);
+            document.getElementById('gastosMes').textContent = formatarMoeda(totalMes);
 
-            // ESTOQUE
-            const totalEPIs = dados.estoque.reduce((sum, e) => sum + parseInt(e.quantidade), 0);
-            document.getElementById('episEstoque').textContent = totalEPIs;
+            let vencidosCount = 0;
+            let proximosVencimentos = [];
 
-            // TABELAS
-            // Re-renderiza as tabelas se a aba estiver ativa
-            const abaAtiva = document.querySelector('.tab-content.active').id;
-            if (abaAtiva === 'gastos') montarTabelaGastos(dados.gastos, 'tabelaGastos');
-            else if (abaAtiva === 'boletos') montarTabelaBoletos(dados.boletos, 'tabelaBoletos');
-            else if (abaAtiva === 'estoque') montarTabelaEstoque(dados.estoque, 'tabelaEstoque');
-            else if (abaAtiva === 'materiais') montarTabelaMateriais(dados.materiais, 'tabelaMateriais');
+            dados.boletos.forEach(b => {
+                if (!b.Vencimento) return;
+                const statusInfo = getStatusBoleto(b.Vencimento, b.Status);
+                if (statusInfo.classe === 'status-vencido') {
+                    vencidosCount++;
+                }
+                if (b.Status === 'Pendente') {
+                    const dias = calcularDiasAteVencimento(b.Vencimento);
+                    if (dias <= 10) {
+                        proximosVencimentos.push({ ...b, diasVencimento: dias, status: statusInfo.texto, classe: statusInfo.classe });
+                    }
+                }
+            });
+            document.getElementById('boletosVencidos').textContent = vencidosCount;
+
+            proximosVencimentos.sort((a, b) => a.diasVencimento - b.diasVencimento);
+            montarTabelaProximosVencimentos(proximosVencimentos, 'proximosVencimentos');
+
+            let epiTotalItems = 0;
+            let epiBaixoCount = 0;
+            dados.estoque.forEach(e => {
+                epiTotalItems++;
+                if (e.Quantidade < e.Mínimo) epiBaixoCount++;
+            });
+            document.getElementById('episEstoque').textContent = `${epiTotalItems - epiBaixoCount} OK / ${epiBaixoCount} Baixo`;
         }
 
-        function montarTabelaGastos(lista, idContainer) {
-            let total = 0;
-            let html = '<table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th></tr></thead><tbody>';
+        function montarTabela(data, containerId, headers, bodyRenderer, footerRenderer = null) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
 
-            lista.sort((a, b) => new Date(b.data) - new Date(a.data));
+            if (data.length === 0) {
+                container.innerHTML = '<p>Nenhum registro encontrado.</p>';
+                return;
+            }
 
-            lista.forEach(g => {
-                total += parseFloat(g.valor);
+            let html = `
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                ${headers.map(h => `<th>${h}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(bodyRenderer).join('')}
+                        </tbody>
+            `;
+
+            if (footerRenderer) {
                 html += `
-                    <tr>
-                        <td>${formatarData(g.data)}</td>
-                        <td>${g.descricao}</td>
-                        <td>${g.categoria}</td>
-                        <td>${formatarMoeda(g.valor)}</td>
-                    </tr>
+                        <tfoot>
+                            ${footerRenderer(data)}
+                        </tfoot>
                 `;
-            });
+            }
 
-            html += `</tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3">Total Geral</td>
-                        <td>${formatarMoeda(total)}</td>
-                    </tr>
-                </tfoot>
-            </table>`;
-            document.getElementById(idContainer).innerHTML = html;
+            html += `
+                    </table>
+                </div>
+            `;
+            container.innerHTML = html;
         }
 
-        // --- MODIFICAÇÃO BOLETOS: Adicionado Data/Meio de Pagamento na Tabela ---
-        function montarTabelaBoletos(lista, idContainer) {
-            let html = '<table><thead><tr><th>Descrição</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Data Pag.</th><th>Meio Pag.</th><th>Ações</th></tr></thead><tbody>';
-            let totalPendente = 0;
-            
-            lista.sort((a, b) => new Date(a.vencimento) - new Date(b.vencimento));
-
-            lista.forEach(b => {
-                const status = getStatusBoleto(b.vencimento, b.status);
-                if (b.status !== 'Pago') totalPendente += parseFloat(b.valor);
-                
-                html += `
-                    <tr>
-                        <td>${b.descricao}</td>
-                        <td>${formatarMoeda(b.valor)}</td>
-                        <td>${formatarData(b.vencimento)}</td>
-                        <td><span class="status-badge ${status.classe}">${status.texto}</span></td>
-                        <td>${b.dataPagamento ? formatarData(b.dataPagamento) : 'N/A'}</td>
-                        <td>${b.meioPagamento || 'N/A'}</td>
-                        <td>${b.status !== 'Pago' ? `<button class="btn-success btn-action" onclick="marcarBoletoPago(${b.id})">Pagar</button>` : ''}</td>
-                    </tr>
-                `;
-            });
-
-            html += `</tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="5">Total Pendente (Boletos Não Pagos)</td>
-                        <td colspan="2">${formatarMoeda(totalPendente)}</td>
-                    </tr>
-                </tfoot>
-            </table>`;
-            document.getElementById(idContainer).innerHTML = html;
+        function montarTabelaGastos(gastos, containerId) {
+            const headers = ['Data', 'Descrição', 'Categoria', 'Valor', 'Ações'];
+            const bodyRenderer = (g) => `<tr><td>${formatarData(g.Data)}</td><td>${g.Descrição}</td><td>${g.Categoria}</td><td>${formatarMoeda(g.Valor)}</td><td><button class="btn btn-danger btn-action" onclick="alert('Exclusão não implementada. ID: ${g.id_firestore}')"><i class="fas fa-trash"></i></button></td></tr>`;
+            const footerRenderer = (gastos) => {
+                const total = gastos.reduce((sum, g) => sum + (parseFloat(g.Valor) || 0), 0);
+                return `<tr><td colspan="3" style="text-align: right;"><strong>Total de Gastos:</strong></td><td><strong>${formatarMoeda(total)}</strong></td><td></td></tr>`;
+            };
+            montarTabela(gastos, containerId, headers, bodyRenderer, footerRenderer);
         }
 
-        // --- MODIFICAÇÃO ESTOQUE: Adicionado Data de Entrada/Saída na Tabela ---
-        function montarTabelaEstoque(lista, idContainer) {
-            let html = '<table><thead><tr><th>Item</th><th>Categoria</th><th>Quantidade</th><th>Mínimo</th><th>Status</th><th>Última Entrada</th><th>Última Saída</th><th>Ações</th></tr></thead><tbody>';
-            let itensBaixo = 0;
-
-            lista.forEach(e => {
-                const statusClass = parseInt(e.quantidade) < parseInt(e.minimo) ? 'status-baixo' : 'status-ok';
-                const statusText = parseInt(e.quantidade) < parseInt(e.minimo) ? 'Baixo' : 'OK';
-                if (statusText === 'Baixo') itensBaixo++;
-                
-                html += `
-                    <tr>
-                        <td>${e.item}</td>
-                        <td>${e.categoria}</td>
-                        <td>${e.quantidade}</td>
-                        <td>${e.minimo}</td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>${e.dataUltimaEntrada ? formatarData(e.dataUltimaEntrada) : 'N/A'}</td>
-                        <td>${e.dataUltimaSaida ? formatarData(e.dataUltimaSaida) : 'N/A'}</td>
-                        <td>
-                            <button class="btn-success btn-action" onclick="entradaEstoque(${e.id})">➕ Entrada</button>
-                            <button class="btn-danger btn-action" onclick="saidaEstoque(${e.id})">➖ Saída</button>
-                        </td>
-                    </tr>
-                `;
+        function montarTabelaBoletos(boletos, containerId) {
+            const sortedBoletos = [...boletos].sort((a, b) => {
+                const statusA = a.Status === 'Pago' ? 1 : 0;
+                const statusB = b.Status === 'Pago' ? 1 : 0;
+                if (statusA !== statusB) return statusA - statusB;
+                return new Date(a.Vencimento).getTime() - new Date(b.Vencimento).getTime();
             });
 
-            html += `</tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="6">Total de Itens Baixo Estoque</td>
-                        <td colspan="2">${itensBaixo} item(s)</td>
-                    </tr>
-                </tfoot>
-            </table>`;
-            document.getElementById(idContainer).innerHTML = html;
+            const headers = ['Descrição', 'Valor', 'Vencimento', 'Status', 'Data Pag.', 'Meio Pag.', 'Ações'];
+            const bodyRenderer = (b) => {
+                const statusInfo = getStatusBoleto(b.Vencimento, b.Status);
+                const isPaid = b.Status === 'Pago';
+                return `<tr><td>${b.Descrição}</td><td>${formatarMoeda(b.Valor)}</td><td>${formatarData(b.Vencimento)}</td><td><span class="status-badge ${statusInfo.classe}">${statusInfo.texto}</span></td><td>${formatarData(b['Data Pagamento'] || 'N/A')}</td><td>${b['Meio Pagamento'] || 'N/A'}</td><td>${isPaid ? `<button class="btn btn-danger btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pendente')"><i class="fas fa-undo"></i> Desfazer</button>` : `<button class="btn btn-success btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pago')"><i class="fas fa-check"></i> Dar Baixa</button>`}</td></tr>`;
+            };
+
+            const footerRenderer = (boletos) => {
+                const totalPendente = boletos.filter(b => b.Status === 'Pendente').reduce((sum, b) => sum + (parseFloat(b.Valor) || 0), 0);
+                const totalPago = boletos.filter(b => b.Status === 'Pago').reduce((sum, b) => sum + (parseFloat(b.Valor) || 0), 0);
+                return `<tr><td colspan="4" style="text-align: right;"><strong>Total Pendente:</strong></td><td colspan="3"><strong>${formatarMoeda(totalPendente)}</strong></td></tr><tr><td colspan="4" style="text-align: right;"><strong>Total Pago:</strong></td><td colspan="3"><strong>${formatarMoeda(totalPago)}</strong></td></tr>`;
+            };
+            montarTabela(sortedBoletos, containerId, headers, bodyRenderer, footerRenderer);
         }
-
-        function montarTabelaMateriais(lista, idContainer) {
-            let total = 0;
-            let html = '<table><thead><tr><th>Data</th><th>Item</th><th>Quantidade</th><th>Valor Total</th><th>Fornecedor</th></tr></thead><tbody>';
-
-            lista.sort((a, b) => new Date(b.data) - new Date(a.data));
-
-            lista.forEach(m => {
-                total += parseFloat(m.valor);
-                html += `
-                    <tr>
-                        <td>${formatarData(m.data)}</td>
-                        <td>${m.item}</td>
-                        <td>${m.quantidade}</td>
-                        <td>${formatarMoeda(m.valor)}</td>
-                        <td>${m.fornecedor}</td>
-                    </tr>
-                `;
-            });
-
-            html += `</tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3">Total Gasto em Materiais</td>
-                        <td colspan="2">${formatarMoeda(total)}</td>
-                    </tr>
-                </tfoot>
-            </table>`;
-            document.getElementById(idContainer).innerHTML = html;
-        }
-
-        // --- Funções de Gráficos ---
         
-        function destruirGrafico(chartId) {
-            if (chartInstances[chartId]) {
-                chartInstances[chartId].destroy();
-                delete chartInstances[chartId];
+        function montarTabelaProximosVencimentos(boletos, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = boletos.length === 0 ? '<p>Nenhum boleto vencido ou próximo do vencimento (próximos 10 dias).</p>' : '';
+            if (boletos.length === 0) return;
+
+            const headers = ['Descrição', 'Valor', 'Vencimento', 'Status'];
+            const bodyRenderer = (b) => `<tr><td>${b.Descrição}</td><td>${formatarMoeda(b.Valor)}</td><td>${formatarData(b.Vencimento)}</td><td><span class="status-badge ${b.classe}">${b.status}</span></td></tr>`;
+            
+            montarTabela(boletos, containerId, headers, bodyRenderer);
+            const dataTable = container.querySelector('.data-table');
+            if (dataTable) dataTable.outerHTML = dataTable.innerHTML;
+        }
+
+        function montarTabelaEstoque(estoque, containerId) {
+            const sortedEstoque = [...estoque].sort((a, b) => {
+                const statusA = getStatusEstoque(a.Quantidade, a.Mínimo).classe;
+                const statusB = getStatusEstoque(b.Quantidade, b.Mínimo).classe;
+                if (statusA === 'status-vencido') return -1;
+                if (statusB === 'status-vencido') return 1;
+                if (statusA === 'status-baixo') return -1;
+                if (statusB === 'status-baixo') return 1;
+                return 0;
+            });
+
+            const headers = ['Item', 'Categoria', 'Qtd', 'Mín.', 'Status', 'Última Entrada', 'Última Saída', 'Ações'];
+            const bodyRenderer = (e) => {
+                const statusInfo = getStatusEstoque(e.Quantidade, e.Mínimo);
+                return `<tr><td>${e.Item}</td><td>${e.Categoria}</td><td>${e.Quantidade}</td><td>${e.Mínimo}</td><td><span class="status-badge ${statusInfo.classe}">${statusInfo.texto}</span></td><td>${formatarData(e['Última Entrada'])}</td><td>${formatarData(e['Última Saída'])}</td><td><button class="btn btn-primary btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'entrada')"><i class="fas fa-plus"></i></button><button class="btn btn-danger btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'saida')"><i class="fas fa-minus"></i></button></td></tr>`;
+            };
+
+            const footerRenderer = (estoque) => {
+                const totalBaixo = estoque.filter(e => e.Quantidade < e.Mínimo).length;
+                const totalOk = estoque.length - totalBaixo;
+                return `<tr><td colspan="4" style="text-align: right;"><strong>Total de Itens:</strong></td><td colspan="4"><strong>${estoque.length}</strong> (OK: ${totalOk} | Baixo/Esgotado: ${epiBaixoCount})</td></tr>`;
+            };
+            montarTabela(sortedEstoque, containerId, headers, bodyRenderer, footerRenderer);
+        }
+
+        function montarTabelaMateriais(materiais, containerId) {
+            const headers = ['Data', 'Item Comprado', 'Quantidade', 'Valor Total', 'Fornecedor', 'Ações'];
+            const bodyRenderer = (m) => `<tr><td>${formatarData(m.Data)}</td><td>${m.Item}</td><td>${m.Quantidade}</td><td>${formatarMoeda(m['Valor Total'])}</td><td>${m.Fornecedor}</td><td><button class="btn btn-danger btn-action" onclick="alert('Exclusão não implementada. ID: ${m.id_firestore}')"><i class="fas fa-trash"></i></button></td></tr>`;
+            const footerRenderer = (materiais) => {
+                const totalValor = materiais.reduce((sum, m) => sum + (parseFloat(m['Valor Total']) || 0), 0);
+                return `<tr><td colspan="3" style="text-align: right;"><strong>Total Gasto em Materiais:</strong></td><td><strong>${formatarMoeda(totalValor)}</strong></td><td colspan="2"></td></tr>`;
+            };
+            montarTabela(materiais, containerId, headers, bodyRenderer, footerRenderer);
+        }
+        
+        // ----------------------------------------------------------------------
+        // --- FUNÇÕES DE GRÁFICOS (CHART.JS) - INCLUÍDAS AGORA ---
+        // ----------------------------------------------------------------------
+
+        function destruirGraficos() {
+            for (const chartId in chartInstances) {
+                if (chartInstances[chartId]) {
+                    chartInstances[chartId].destroy();
+                    chartInstances[chartId] = null;
+                }
             }
         }
 
         function atualizarGraficos() {
-            // Destruir gráficos existentes antes de criar novos
-            destruirGrafico('gastosPorCategoriaChart');
-            destruirGrafico('estoqueStatusChart');
-            destruirGrafico('materiaisPorMesChart');
-            destruirGrafico('gastosDiariosChart');
+            destruirGraficos();
 
-            // 1. Gastos por Categoria (Mês Atual)
-            const gastosMesAtual = dados.gastos.filter(g => new Date(g.data + 'T00:00:00').getMonth() === new Date().getMonth());
-            const gastosAgrupados = gastosMesAtual.reduce((acc, g) => {
-                acc[g.categoria] = (acc[g.categoria] || 0) + parseFloat(g.valor);
-                return acc;
-            }, {});
+            desenharGastosPorCategoria();
+            desenharEstoqueStatus();
+            desenharMateriaisPorMes();
+            desenharGastosDiarios();
+        }
 
-            const categorias = Object.keys(gastosAgrupados);
-            const valores = Object.values(gastosAgrupados);
+        function desenharGrafico(canvasId, type, data, options) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            chartInstances[canvasId] = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: options
+            });
+        }
 
-            const ctx1 = document.getElementById('gastosPorCategoriaChart').getContext('2d');
-            chartInstances.gastosPorCategoriaChart = new Chart(ctx1, {
-                type: 'pie',
-                data: {
-                    labels: categorias,
-                    datasets: [{
-                        data: valores,
-                        backgroundColor: ['#667eea', '#764ba2', '#ffc107', '#4CAF50', '#F44336']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                        tooltip: { callbacks: { label: (item) => formatarMoeda(item.raw) } }
-                    }
-                }
+        function desenharGastosPorCategoria() {
+            const mesAtual = new Date().toISOString().substring(0, 7);
+            const gastosMes = dados.gastos.filter(g => g.Data && g.Data.substring(0, 7) === mesAtual);
+
+            const categorias = {};
+            gastosMes.forEach(g => {
+                const valor = parseFloat(g.Valor) || 0;
+                categorias[g.Categoria] = (categorias[g.Categoria] || 0) + valor;
             });
 
-            // 2. Estoque por Status
-            const statusCount = dados.estoque.reduce((acc, e) => {
-                const status = parseInt(e.quantidade) < parseInt(e.minimo) ? 'Baixo Estoque' : 'Estoque OK';
-                acc[status] = (acc[status] || 0) + 1;
-                return acc;
-            }, {});
-            
-            const ctx2 = document.getElementById('estoqueStatusChart').getContext('2d');
-            chartInstances.estoqueStatusChart = new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(statusCount),
-                    datasets: [{
-                        data: Object.values(statusCount),
-                        backgroundColor: ['#F44336', '#4CAF50']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' }
+            const labels = Object.keys(categorias);
+            const dataValues = Object.values(categorias);
+
+            const data = {
+                labels: labels,
+                datasets: [{
+                    label: 'Valor Gasto (R$)',
+                    data: dataValues,
+                    backgroundColor: [
+                        '#667eea', '#764ba2', '#ff6384', '#ff9f40', '#4bc0c0', '#36a2eb'
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+
+            const options = {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += formatarMoeda(context.parsed);
+                                }
+                                return label;
+                            }
+                        }
                     }
                 }
+            };
+
+            desenharGrafico('gastosPorCategoriaChart', 'doughnut', data, options);
+        }
+
+        function desenharEstoqueStatus() {
+            let okCount = 0;
+            let baixoCount = 0;
+            let esgotadoCount = 0;
+
+            dados.estoque.forEach(e => {
+                const statusInfo = getStatusEstoque(e.Quantidade, e.Mínimo);
+                if (statusInfo.texto === 'OK') okCount++;
+                else if (statusInfo.texto === 'Baixo') baixoCount++;
+                else if (statusInfo.texto === 'Esgotado') esgotadoCount++;
             });
 
-            // 3. Compras de Materiais (Últimos 6 meses)
+            const data = {
+                labels: ['OK', 'Baixo', 'Esgotado'],
+                datasets: [{
+                    data: [okCount, baixoCount, esgotadoCount],
+                    backgroundColor: [
+                        'var(--success-color)',
+                        'var(--warning-color)',
+                        'var(--danger-color)',
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+
+            const options = {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            };
+
+            desenharGrafico('estoqueStatusChart', 'pie', data, options);
+        }
+
+        function desenharMateriaisPorMes() {
+            const dataAtual = new Date();
             const meses = [];
-            const totaisMes = [];
-            const hoje = new Date();
-            for (let i = 5; i >= 0; i--) {
-                const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
-                const mesLabel = d.toLocaleString('pt-BR', { month: 'short', year: '2-digit' });
-                meses.push(mesLabel);
+            const labels = [];
+            const valores = [];
 
-                const total = dados.materiais
-                    .filter(m => {
-                        const dataMaterial = new Date(m.data + 'T00:00:00');
-                        return dataMaterial.getFullYear() === d.getFullYear() && dataMaterial.getMonth() === d.getMonth();
-                    })
-                    .reduce((sum, m) => sum + parseFloat(m.valor), 0);
-                
-                totaisMes.push(total);
+            // Gerar os últimos 6 meses
+            for (let i = 0; i < 6; i++) {
+                const d = new Date(dataAtual.getFullYear(), dataAtual.getMonth() - i, 1);
+                const anoMes = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                const nomeMes = d.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+                meses.unshift(anoMes);
+                labels.unshift(nomeMes);
+                valores.unshift(0); // Inicializa com 0
             }
 
-            const ctx3 = document.getElementById('materiaisPorMesChart').getContext('2d');
-            chartInstances.materiaisPorMesChart = new Chart(ctx3, {
-                type: 'bar',
-                data: {
-                    labels: meses,
-                    datasets: [{
-                        label: 'Gasto Total em Materiais',
-                        data: totaisMes,
-                        backgroundColor: '#667eea',
-                        borderColor: '#667eea',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true, ticks: { callback: (value) => formatarMoeda(value) } }
-                    },
-                    plugins: {
-                        tooltip: { callbacks: { label: (item) => `${item.dataset.label}: ${formatarMoeda(item.raw)}` } }
+            // Agrupar e somar os valores
+            dados.materiais.forEach(m => {
+                if (m.Data) {
+                    const anoMes = m.Data.substring(0, 7);
+                    const index = meses.indexOf(anoMes);
+                    if (index !== -1) {
+                        valores[index] += parseFloat(m['Valor Total']) || 0;
                     }
                 }
             });
 
-            // 4. Gastos Diários (Últimos 30 dias)
-            const gastosDiariosMap = new Map();
-            for(let i = 29; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
+            const data = {
+                labels: labels,
+                datasets: [{
+                    label: 'Total de Compras (R$)',
+                    data: valores,
+                    backgroundColor: 'rgba(118, 75, 162, 0.5)',
+                    borderColor: 'var(--secondary-color)',
+                    borderWidth: 1,
+                    tension: 0.1
+                }]
+            };
+
+            const options = {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return formatarMoeda(value);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += formatarMoeda(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            };
+
+            desenharGrafico('materiaisPorMesChart', 'bar', data, options);
+        }
+
+        function desenharGastosDiarios() {
+            const dias = 30;
+            const dataAtual = new Date();
+            const labels = [];
+            const dataPoints = [];
+            const gastosDiarios = {};
+
+            // Inicializar os últimos 30 dias
+            for (let i = dias - 1; i >= 0; i--) {
+                const d = new Date(dataAtual);
+                d.setDate(dataAtual.getDate() - i);
                 const dataStr = d.toISOString().split('T')[0];
-                gastosDiariosMap.set(formatarData(dataStr), 0);
+                labels.push(formatarData(dataStr).substring(0, 5)); // Apenas dia/mês
+                gastosDiarios[dataStr] = 0;
             }
-            
+
+            // Somar os gastos
             dados.gastos.forEach(g => {
-                const dataFormatada = formatarData(g.data);
-                if (gastosDiariosMap.has(dataFormatada)) {
-                    gastosDiariosMap.set(dataFormatada, gastosDiariosMap.get(dataFormatada) + parseFloat(g.valor));
+                if (g.Data && g.Data in gastosDiarios) {
+                    gastosDiarios[g.Data] += parseFloat(g.Valor) || 0;
                 }
             });
 
-            const ctx4 = document.getElementById('gastosDiariosChart').getContext('2d');
-            chartInstances.gastosDiariosChart = new Chart(ctx4, {
-                type: 'line',
-                data: {
-                    labels: Array.from(gastosDiariosMap.keys()),
-                    datasets: [{
-                        label: 'Gastos Diários (R$)',
-                        data: Array.from(gastosDiariosMap.values()),
-                        borderColor: '#F44336',
-                        backgroundColor: 'rgba(244, 67, 54, 0.2)',
-                        tension: 0.4,
-                        fill: true
-                    }]
+            // Preencher os data points na ordem correta
+            Object.keys(gastosDiarios).forEach(key => {
+                dataPoints.push(gastosDiarios[key]);
+            });
+
+            const data = {
+                labels: labels,
+                datasets: [{
+                    label: 'Gastos Diários (R$)',
+                    data: dataPoints,
+                    fill: true,
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    borderColor: 'var(--primary-color)',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    tension: 0.4
+                }]
+            };
+
+            const options = {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return formatarMoeda(value);
+                            }
+                        }
+                    }
                 },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true, ticks: { callback: (value) => formatarMoeda(value) } }
-                    },
-                    plugins: {
-                        tooltip: { callbacks: { label: (item) => `${item.dataset.label}: ${formatarMoeda(item.raw)}` } }
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += formatarMoeda(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
                     }
                 }
-            });
+            };
+
+            desenharGrafico('gastosDiariosChart', 'line', data, options);
         }
 
-        // Implementação das funções de Adição (Simulação)
-        function adicionarGasto() {
-            const data = document.getElementById('gastoData').value;
-            const descricao = document.getElementById('gastoDescricao').value;
-            const categoria = document.getElementById('gastoCategoria').value;
-            const valor = parseFloat(document.getElementById('gastoValor').value);
+        // ----------------------------------------------------------------------
+        // --- FUNÇÕES DE RELATÓRIO - INCLUÍDAS AGORA ---
+        // ----------------------------------------------------------------------
 
-            if (!data || !descricao || !categoria || isNaN(valor) || valor <= 0) {
-                alert('Preencha todos os campos corretamente para registrar o gasto.');
-                return;
-            }
+        function inicializarFiltrosRelatorio() {
+            const dataFim = new Date().toISOString().split('T')[0];
+            const dataInicio = new Date();
+            dataInicio.setDate(dataInicio.getDate() - 30); // 30 dias atrás
+            const dataInicioStr = dataInicio.toISOString().split('T')[0];
 
-            const novoGasto = { data, descricao, categoria, valor };
-            dados.gastos.push(novoGasto);
+            const relatorioDataInicio = document.getElementById('relatorioDataInicio');
+            const relatorioDataFim = document.getElementById('relatorioDataFim');
             
-            alert('Gasto adicionado! (Simulação)');
-            atualizarDashboard();
-            montarTabelaGastos(dados.gastos, 'tabelaGastos');
-            // Aqui você enviaria para a API
+            if(relatorioDataInicio) relatorioDataInicio.value = dataInicioStr;
+            if(relatorioDataFim) relatorioDataFim.value = dataFim;
         }
 
-        function adicionarBoleto() {
-            const descricao = document.getElementById('boletoDescricao').value;
-            const valor = parseFloat(document.getElementById('boletoValor').value);
-            const vencimento = document.getElementById('boletoVencimento').value;
+        function filtrarPorData(dataArray, campoData, dataInicio, dataFim) {
+            const start = new Date(dataInicio + 'T00:00:00').getTime();
+            const end = new Date(dataFim + 'T00:00:00').getTime();
 
-            if (!descricao || !vencimento || isNaN(valor) || valor <= 0) {
-                alert('Preencha todos os campos corretamente para registrar o boleto.');
-                return;
-            }
-
-            const novoId = Math.max(0, ...dados.boletos.map(b => b.id)) + 1;
-            const novoBoleto = { id: novoId, descricao, valor, vencimento, status: 'Pendente', dataPagamento: '', meioPagamento: '' };
-            dados.boletos.push(novoBoleto);
-
-            alert('Boleto adicionado! (Simulação)');
-            atualizarDashboard();
-            montarTabelaBoletos(dados.boletos, 'tabelaBoletos');
-            // Aqui você enviaria para a API
-        }
-
-        function adicionarEPI() {
-            const item = document.getElementById('epiItem').value;
-            const categoria = document.getElementById('epiCategoria').value;
-            const quantidade = parseInt(document.getElementById('epiQuantidade').value);
-            const minimo = parseInt(document.getElementById('epiMinimo').value);
-            const hoje = new Date().toISOString().split('T')[0];
-
-            if (!item || !categoria || isNaN(quantidade) || quantidade < 0 || isNaN(minimo) || minimo < 0) {
-                alert('Preencha todos os campos corretamente para registrar o EPI.');
-                return;
-            }
-
-            const novoId = Math.max(0, ...dados.estoque.map(e => e.id)) + 1;
-            const novoEPI = { id: novoId, item, categoria, quantidade, minimo, dataUltimaEntrada: hoje, dataUltimaSaida: '' };
-            dados.estoque.push(novoEPI);
-
-            alert('EPI adicionado! (Simulação)');
-            atualizarDashboard();
-            montarTabelaEstoque(dados.estoque, 'tabelaEstoque');
-            // Aqui você enviaria para a API
-        }
-
-        function adicionarMaterial() {
-            const data = document.getElementById('materialData').value;
-            const item = document.getElementById('materialItem').value;
-            const quantidade = parseInt(document.getElementById('materialQuantidade').value);
-            const valor = parseFloat(document.getElementById('materialValor').value);
-            const fornecedor = document.getElementById('materialFornecedor').value;
-
-            if (!data || !item || !fornecedor || isNaN(quantidade) || quantidade <= 0 || isNaN(valor) || valor <= 0) {
-                alert('Preencha todos os campos corretamente para registrar a compra de material.');
-                return;
-            }
-
-            const novoMaterial = { data, item, quantidade, valor, fornecedor };
-            dados.materiais.push(novoMaterial);
-
-            alert('Material adicionado! (Simulação)');
-            atualizarDashboard();
-            montarTabelaMateriais(dados.materiais, 'tabelaMateriais');
-            // Aqui você enviaria para a API
-        }
-
-        // Funções auxiliares para Relatórios
-        function filtrarDadosPorData(lista, campoData, inicio, fim) {
-            if (!inicio || !fim) return lista;
-            const dataInicio = new Date(inicio + 'T00:00:00');
-            const dataFim = new Date(fim + 'T23:59:59');
-
-            return lista.filter(item => {
-                const dataItem = new Date(item[campoData]);
-                return dataItem >= dataInicio && dataItem <= dataFim;
+            return dataArray.filter(item => {
+                if (!item[campoData]) return false;
+                const itemDate = new Date(item[campoData] + 'T00:00:00').getTime();
+                return itemDate >= start && itemDate <= end;
             });
         }
-
-        // --- MODIFICAÇÃO RELATÓRIO: Chamando as tabelas com os novos campos ---
+        
         function gerarRelatorio() {
-            const inicio = document.getElementById('relatorioDataInicio').value;
-            const fim = document.getElementById('relatorioDataFim').value;
-            const output = document.getElementById('relatorioOutput');
-            
-            if ((!inicio || !fim) && (document.getElementById('checkGastos').checked || document.getElementById('checkMateriais').checked)) {
-                alert('Por favor, defina as Datas Inicial e Final para relatórios de Gastos e Materiais.');
+            const dataInicio = document.getElementById('relatorioDataInicio').value;
+            const dataFim = document.getElementById('relatorioDataFim').value;
+            const outputDiv = document.getElementById('relatorioOutput');
+            const printButton = document.querySelector('.print-button');
+
+            if (!dataInicio || !dataFim) {
+                alert('Por favor, defina a Data Inicial e Data Final para o relatório.');
                 return;
             }
 
-            let htmlRelatorio = `<h1 style="color: #667eea; margin-bottom: 20px;">Relatório Gerencial</h1>
-                                <p style="margin-bottom: 20px;"><strong>Período:</strong> ${inicio ? formatarData(inicio) + ' a ' + formatarData(fim) : 'Completo'}</p>`;
-            
-            // Filtra os dados
-            const gastosFiltrados = filtrarDadosPorData(dados.gastos, 'data', inicio, fim);
-            const boletosFiltrados = dados.boletos;
-            const estoqueFiltrado = dados.estoque; 
-            const materiaisFiltrados = filtrarDadosPorData(dados.materiais, 'data', inicio, fim);
+            const checkResumo = document.getElementById('checkResumo').checked;
+            const checkGastos = document.getElementById('checkGastos').checked;
+            const checkBoletos = document.getElementById('checkBoletos').checked;
+            const checkEstoque = document.getElementById('checkEstoque').checked;
+            const checkMateriais = document.getElementById('checkMateriais').checked;
 
-            // Adiciona o conteúdo selecionado
-            if (document.getElementById('checkResumo').checked) {
-                const totalGastos = gastosFiltrados.reduce((sum, g) => sum + parseFloat(g.valor), 0);
-                const totalBoletosP = boletosFiltrados.filter(b => b.status !== 'Pago').reduce((sum, b) => sum + parseFloat(b.valor), 0);
+            let htmlRelatorio = `
+                <h2>Relatório de Gestão de Obras</h2>
+                <p><strong>Período:</strong> ${formatarData(dataInicio)} a ${formatarData(dataFim)}</p>
+                <hr>
+            `;
+
+            // Filtragem de Dados
+            const gastosFiltrados = filtrarPorData(dados.gastos, 'Data', dataInicio, dataFim);
+            const boletosFiltrados = dados.boletos.filter(b => {
+                if (!b.Vencimento) return false;
+                const vencimento = new Date(b.Vencimento + 'T00:00:00').getTime();
+                const dataPagamento = b['Data Pagamento'] ? new Date(b['Data Pagamento'] + 'T00:00:00').getTime() : null;
+                const start = new Date(dataInicio + 'T00:00:00').getTime();
+                const end = new Date(dataFim + 'T00:00:00').getTime();
+
+                // Inclui se o vencimento está no período OU se foi pago no período
+                return (vencimento >= start && vencimento <= end) || (dataPagamento && dataPagamento >= start && dataPagamento <= end);
+            });
+            const materiaisFiltrados = filtrarPorData(dados.materiais, 'Data', dataInicio, dataFim);
+
+            // 1. Resumo Financeiro
+            if (checkResumo) {
+                const totalGastos = gastosFiltrados.reduce((sum, g) => sum + (parseFloat(g.Valor) || 0), 0);
+                const totalMateriais = materiaisFiltrados.reduce((sum, m) => sum + (parseFloat(m['Valor Total']) || 0), 0);
+                const totalBoletosPago = boletosFiltrados
+                    .filter(b => b.Status === 'Pago' && b['Data Pagamento'] && new Date(b['Data Pagamento'] + 'T00:00:00').getTime() >= new Date(dataInicio + 'T00:00:00').getTime() && new Date(b['Data Pagamento'] + 'T00:00:00').getTime() <= new Date(dataFim + 'T00:00:00').getTime())
+                    .reduce((sum, b) => sum + (parseFloat(b.Valor) || 0), 0);
+                const totalBoletosPendentes = boletosFiltrados
+                    .filter(b => b.Status === 'Pendente' && b.Vencimento && new Date(b.Vencimento + 'T00:00:00').getTime() >= new Date(dataInicio + 'T00:00:00').getTime() && new Date(b.Vencimento + 'T00:00:00').getTime() <= new Date(dataFim + 'T00:00:00').getTime())
+                    .reduce((sum, b) => sum + (parseFloat(b.Valor) || 0), 0);
                 
+                const totalGeral = totalGastos + totalMateriais + totalBoletosPago;
+
                 htmlRelatorio += `
-                    <div class="cards-grid">
-                        <div class="card"><div class="card-title">Total Gasto no Período</div><div class="card-value">${formatarMoeda(totalGastos)}</div></div>
-                        <div class="card danger"><div class="card-title">Total Boletos Pendentes</div><div class="card-value">${formatarMoeda(totalBoletosP)}</div></div>
-                        <div class="card success"><div class="card-title">Itens Estoque Baixo</div><div class="card-value">${estoqueFiltrado.filter(e => parseInt(e.quantidade) < parseInt(e.minimo)).length}</div></div>
-                    </div>
-                    <h2 style="margin-top: 30px; color: #667eea;">Detalhes do Relatório</h2>
+                    <h3>📊 Resumo Financeiro no Período</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Tipo</th><th>Total (R$)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Gastos Diários</td><td>${formatarMoeda(totalGastos)}</td></tr>
+                            <tr><td>Compra de Materiais</td><td>${formatarMoeda(totalMateriais)}</td></tr>
+                            <tr><td>Boletos Pagos no Período</td><td>${formatarMoeda(totalBoletosPago)}</td></tr>
+                            <tr><td>Boletos Venc. Pendentes no Período</td><td>${formatarMoeda(totalBoletosPendentes)}</td></tr>
+                        </tbody>
+                        <tfoot>
+                            <tr><td><strong>Total Geral (Gastos + Materiais + Pagos)</strong></td><td><strong>${formatarMoeda(totalGeral)}</strong></td></tr>
+                        </tfoot>
+                    </table>
+                    <br>
                 `;
             }
 
-            if (document.getElementById('checkGastos').checked) {
-                htmlRelatorio += `<h3 style="margin-top: 20px; color: #333;">Gastos Diários (${gastosFiltrados.length} Registros)</h3>`;
-                htmlRelatorio += gerarTabelaHTML(gastosFiltrados, 
-                    ['Data', 'Descrição', 'Categoria', 'Valor'], 
-                    ['data', 'descricao', 'categoria', 'valor'], 
-                    'valor', 
-                    'Total Gasto',
-                    { formatarData: ['data'], formatarMoeda: ['valor'] }
-                );
-            }
-            
-            if (document.getElementById('checkBoletos').checked) {
-                htmlRelatorio += `<h3 style="margin-top: 20px; color: #333;">Controle de Boletos (${boletosFiltrados.length} Registros)</h3>`;
-                htmlRelatorio += gerarTabelaHTML(boletosFiltrados, 
-                    ['Descrição', 'Valor', 'Vencimento', 'Status', 'Data Pag.', 'Meio Pag.'], 
-                    ['descricao', 'valor', 'vencimento', 'status', 'dataPagamento', 'meioPagamento'], 
-                    'valor', 
-                    'Total Pendente',
-                    { formatarData: ['vencimento', 'dataPagamento'], totalFiltrado: (b) => b.status !== 'Pago' }
-                );
-            }
-            
-            if (document.getElementById('checkEstoque').checked) {
-                htmlRelatorio += `<h3 style="margin-top: 20px; color: #333;">Estoque de EPIs (${estoqueFiltrado.length} Itens)</h3>`;
-                htmlRelatorio += gerarTabelaHTML(estoqueFiltrado, 
-                    ['Item', 'Categoria', 'Quantidade', 'Mínimo', 'Status', 'Última Entrada', 'Última Saída'], 
-                    ['item', 'categoria', 'quantidade', 'minimo', (e) => parseInt(e.quantidade) < parseInt(e.minimo) ? 'Baixo' : 'OK', 'dataUltimaEntrada', 'dataUltimaSaida'], 
-                    null, 
-                    'Itens Baixo Estoque',
-                    { formatarData: ['dataUltimaEntrada', 'dataUltimaSaida'], totalPersonalizado: estoqueFiltrado.filter(e => parseInt(e.quantidade) < parseInt(e.minimo)).length, totalNaUltimaColuna: true }
-                );
-            }
-            
-            if (document.getElementById('checkMateriais').checked) {
-                htmlRelatorio += `<h3 style="margin-top: 20px; color: #333;">Compra de Materiais (${materiaisFiltrados.length} Registros)</h3>`;
-                htmlRelatorio += gerarTabelaHTML(materiaisFiltrados, 
-                    ['Data', 'Item', 'Quantidade', 'Valor Total', 'Fornecedor'], 
-                    ['data', 'item', 'quantidade', 'valor', 'fornecedor'], 
-                    'valor', 
-                    'Total Gasto',
-                    { formatarData: ['data'], formatarMoeda: ['valor'] }
-                );
+            // 2. Tabela de Gastos Diários
+            if (checkGastos) { 
+                htmlRelatorio += `<h3>💸 Detalhamento de Gastos Diários</h3>`; 
+                const tempDiv = document.createElement('div'); 
+                montarTabelaGastos(gastosFiltrados, 'tempGastos'); 
+                tempDiv.id = 'tempGastos'; 
+                document.body.appendChild(tempDiv); 
+                let tempHTML = tempDiv.innerHTML.replace(/<th>Ações<\/th>/g, '').replace(/<td><button[\s\S]*?<\/button><\/td>/g, '');
+                htmlRelatorio += tempHTML;
+                document.body.removeChild(tempDiv); 
+                htmlRelatorio += `<br>`; 
             }
 
-            output.innerHTML = htmlRelatorio;
-            output.style.display = 'block';
-            document.querySelector('.print-button').style.display = 'inline-block';
-        }
+            // 3. Tabela de Controle de Boletos
+            if (checkBoletos) { 
+                htmlRelatorio += `<h3>🧾 Detalhamento de Boletos (Vencimento ou Pagamento no Período)</h3>`; 
+                const tempDiv = document.createElement('div'); 
+                montarTabelaBoletos(boletosFiltrados, 'tempBoletos'); 
+                tempDiv.id = 'tempBoletos'; 
+                document.body.appendChild(tempDiv); 
+                let tempHTML = tempDiv.innerHTML.replace(/<th>Ações<\/th>/g, '').replace(/<td><button[\s\S]*?<\/button><\/td>/g, '');
+                htmlRelatorio += tempHTML;
+                document.body.removeChild(tempDiv); 
+                htmlRelatorio += `<br>`; 
+            }
 
-        function gerarTabelaHTML(data, headers, keys, totalKey, totalLabel, formatOptions = {}) {
-            let html = '<table><thead><tr>';
-            headers.forEach(h => html += `<th>${h}</th>`);
-            html += '</tr></thead><tbody>';
-
-            let totalCalculado = 0;
-            
-            data.forEach(item => {
-                html += '<tr>';
-                keys.forEach(keyOrFunc => {
-                    let value;
-                    let key = typeof keyOrFunc === 'function' ? null : keyOrFunc;
-
-                    if (typeof keyOrFunc === 'function') {
-                        value = keyOrFunc(item);
-                    } else {
-                        value = item[keyOrFunc];
-                    }
-
-                    // Formatação de Moeda
-                    if (formatOptions.formatarMoeda && key && formatOptions.formatarMoeda.includes(key)) {
-                        value = formatarMoeda(value);
-                    } 
-                    // Formatação de Data
-                    else if (formatOptions.formatarData && key && formatOptions.formatarData.includes(key)) {
-                        value = formatarData(value);
-                    }
-
-                    html += `<td>${value || 'N/A'}</td>`;
-                });
-                html += '</tr>';
+            // 4. Tabela de Estoque de EPIs
+            if (checkEstoque) { 
+                htmlRelatorio += `<h3>👷 Estoque Atual de EPIs</h3>`; 
+                const tempDiv = document.createElement('div'); 
+                montarTabelaEstoque(dados.estoque, 'tempEstoque'); 
+                tempDiv.id = 'tempEstoque'; 
+                document.body.appendChild(tempDiv); 
                 
-                // Cálculo do Total
-                if (totalKey && item[totalKey]) {
-                    let deveSomar = true;
-                    if (formatOptions.totalFiltrado) {
-                        deveSomar = formatOptions.totalFiltrado(item);
-                    }
-                    if (deveSomar) {
-                        totalCalculado += parseFloat(item[totalKey]);
-                    }
-                }
-            });
-
-            html += '</tbody>';
-
-            if (totalKey || formatOptions.totalPersonalizado !== undefined) {
-                const totalIsNumeric = totalKey !== null;
-                const totalValue = totalIsNumeric ? formatarMoeda(totalCalculado) : formatOptions.totalPersonalizado;
+                let estoqueTableHTML = tempDiv.querySelector('table').outerHTML; 
+                const tempEl = document.createElement('div'); 
+                tempEl.innerHTML = estoqueTableHTML; 
+                const table = tempEl.querySelector('table'); 
+                const columnsToRemove = [5, 6, 7]; 
                 
-                // Encontra a coluna de valor ou assume a última para totais não monetários
-                let totalColumnIndex = headers.length - 1; 
-                if (totalKey) {
-                    const valueHeaderIndex = headers.findIndex(h => h.includes('Valor') || h.includes('Total'));
-                    if (valueHeaderIndex !== -1) totalColumnIndex = valueHeaderIndex;
-                } else if (!formatOptions.totalNaUltimaColuna) {
-                    // Se for um total não monetário mas não quiser na última coluna, desconsidera
-                    totalColumnIndex = -1;
+                columnsToRemove.sort((a, b) => b - a).forEach(colIndex => { 
+                    const th = table.querySelectorAll('thead th').item(colIndex);
+                    if (th) th.remove();
+                }); 
+                table.querySelectorAll('tbody tr').forEach(row => { 
+                    columnsToRemove.sort((a, b) => b - a).forEach(colIndex => { 
+                        const td = row.querySelectorAll('td').item(colIndex);
+                        if (td) td.remove();
+                    }); 
+                }); 
+
+                let footerHTML = table.querySelector('tfoot') ? table.querySelector('tfoot').innerHTML : '';
+                if(footerHTML) {
+                    // Ajusta o colspan de 4 para 2 e de 3 para 2, removendo 3 colunas
+                    footerHTML = footerHTML.replace(/colspan="4"/g, 'colspan="2"').replace(/colspan="3"/g, 'colspan="2"'); 
+                    table.querySelector('tfoot').innerHTML = footerHTML;
                 }
                 
-                if (totalColumnIndex !== -1) {
-                    const colSpan = totalColumnIndex;
-                    const valueColSpan = headers.length - totalColumnIndex; 
-
-                    html += `<tfoot><tr><td colspan="${colSpan + 1}">${totalLabel}</td>`;
-                    
-                    // Preenche as células vazias antes da célula do total
-                    for(let i = 0; i < valueColSpan - 1; i++) {
-                        html += '<td></td>';
-                    }
-                    
-                    // Célula do total (que pode ter colspan 1)
-                    html += `<td colspan="${valueColSpan - (valueColSpan > 1 ? 1 : 0)}">${totalValue}</td>`;
-                    
-                    html += `</tr></tfoot>`;
-                } else if (totalKey) {
-                    // Fallback para total monetário na última coluna se não achou "Valor"
-                     html += `<tfoot><tr><td colspan="${headers.length - 1}">${totalLabel}</td><td>${totalValue}</td></tr></tfoot>`;
-                }
+                htmlRelatorio += tempEl.innerHTML; 
+                document.body.removeChild(tempDiv); 
+                htmlRelatorio += `<br>`; 
             }
 
+            // 5. Tabela de Compra de Materiais
+            if (checkMateriais) { 
+                htmlRelatorio += `<h3>🧱 Detalhamento de Compra de Materiais</h3>`; 
+                const tempDiv = document.createElement('div'); 
+                montarTabelaMateriais(materiaisFiltrados, 'tempMateriais'); 
+                tempDiv.id = 'tempMateriais'; 
+                document.body.appendChild(tempDiv); 
+                let tempHTML = tempDiv.innerHTML.replace(/<th>Ações<\/th>/g, '').replace(/<td><button[\s\S]*?<\/button><\/td>/g, '');
+                htmlRelatorio += tempHTML;
+                document.body.removeChild(tempDiv); 
+                htmlRelatorio += `<br>`; 
+            }
 
-            html += '</table>';
-            return `<div class="data-table" style="box-shadow: none; padding: 15px 0;">${html}</div>`;
+            outputDiv.innerHTML = htmlRelatorio;
+            outputDiv.style.display = 'block';
+            printButton.style.display = 'block';
         }
 
-        function inicializarFiltrosRelatorio() {
-            const hoje = new Date().toISOString().split('T')[0];
-            const primeiroDiaMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-            
-            document.getElementById('relatorioDataInicio').value = primeiroDiaMes;
-            document.getElementById('relatorioDataFim').value = hoje;
-        }
-
-
-        // Inicia o carregamento dos dados
         document.addEventListener('DOMContentLoaded', () => {
-            carregarDados();
-            mudarAba('dashboard'); // Garante que a aba Dashboard esteja ativa ao iniciar
+            const hoje = new Date().toISOString().split('T')[0];
+            const dataGasto = document.getElementById('gastoData');
+            const dataMaterial = document.getElementById('materialData');
+            if(dataGasto) dataGasto.value = hoje;
+            if(dataMaterial) dataMaterial.value = hoje;
+            
+            // O onAuthStateChanged cuida de chamar carregarDadosFirebase() e mudarAba('dashboard') após o login
         });
     </script>
 </body>
+
 </html>
