@@ -998,7 +998,7 @@
                 await db.collection(colecoes.materiais).add(novoMaterial);
                 alert(`Sucesso: Compra de material registrada.`);
 
-                document.getElementById('materialData').value = new Date().toISOString().split('T')[0];
+                document.getElementById('materialData').value = '';
                 document.getElementById('materialItem').value = '';
                 document.getElementById('materialQuantidade').value = '';
                 document.getElementById('materialValor').value = '';
@@ -1030,10 +1030,11 @@
 
             atualizarDashboard();
 
-            if (aba === 'gastos') montarTabelaGastos(dados.gastos, 'tabelaGastos');
-            else if (aba === 'boletos') montarTabelaBoletos(dados.boletos, 'tabelaBoletos');
-            else if (aba === 'estoque') montarTabelaEstoque(dados.estoque, 'tabelaEstoque');
-            else if (aba === 'materiais') montarTabelaMateriais(dados.materiais, 'tabelaMateriais');
+            // CORREÇÃO: Passar 'false' para indicar que é a tabela do DASHBOARD (não é relatório)
+            if (aba === 'gastos') montarTabelaGastos(dados.gastos, 'tabelaGastos', false);
+            else if (aba === 'boletos') montarTabelaBoletos(dados.boletos, 'tabelaBoletos', false);
+            else if (aba === 'estoque') montarTabelaEstoque(dados.estoque, 'tabelaEstoque', false);
+            else if (aba === 'materiais') montarTabelaMateriais(dados.materiais, 'tabelaMateriais', false);
             else if (aba === 'graficos') atualizarGraficos();
             else if (aba === 'relatorios') {
                 inicializarFiltrosRelatorio();
@@ -1163,17 +1164,23 @@
             container.innerHTML = html;
         }
 
-        function montarTabelaGastos(gastos, containerId) {
-            const headers = ['Data', 'Descrição', 'Categoria', 'Valor', 'Ações'];
-            const bodyRenderer = (g) => `<tr><td>${formatarData(g.Data)}</td><td>${g.Descrição}</td><td>${g.Categoria}</td><td>${formatarMoeda(g.Valor)}</td><td><button class="btn btn-danger btn-action" onclick="alert('Exclusão não implementada. ID: ${g.id_firestore}')"><i class="fas fa-trash"></i></button></td></tr>`;
+        // 🟢 CORRIGIDA: Adicionado parâmetro isRelatorio e renderização condicional
+        function montarTabelaGastos(gastos, containerId, isRelatorio = false) {
+            const headers = isRelatorio ? ['Data', 'Descrição', 'Categoria', 'Valor'] : ['Data', 'Descrição', 'Categoria', 'Valor', 'Ações'];
+            
+            const bodyRenderer = (g) => `<tr><td>${formatarData(g.Data)}</td><td>${g.Descrição}</td><td>${g.Categoria}</td><td>${formatarMoeda(g.Valor)}</td>${isRelatorio ? '' : `<td><button class="btn btn-danger btn-action" onclick="alert('Exclusão não implementada. ID: ${g.id_firestore}')"><i class="fas fa-trash"></i></button></td>`}</tr>`;
+
             const footerRenderer = (gastos) => {
                 const total = gastos.reduce((sum, g) => sum + (parseFloat(g.Valor) || 0), 0);
-                return `<tr><td colspan="3" style="text-align: right;"><strong>Total de Gastos:</strong></td><td><strong>${formatarMoeda(total)}</strong></td><td></td></tr>`;
+                const colSpan = isRelatorio ? 3 : 3;
+                const emptyCell = isRelatorio ? '' : '<td></td>';
+                return `<tr><td colspan="${colSpan}" style="text-align: right;"><strong>Total de Gastos:</strong></td><td><strong>${formatarMoeda(total)}</strong></td>${emptyCell}</tr>`;
             };
             montarTabela(gastos, containerId, headers, bodyRenderer, footerRenderer);
         }
 
-        function montarTabelaBoletos(boletos, containerId) {
+        // 🟢 CORRIGIDA: Adicionado parâmetro isRelatorio e renderização condicional
+        function montarTabelaBoletos(boletos, containerId, isRelatorio = false) {
             const sortedBoletos = [...boletos].sort((a, b) => {
                 const statusA = a.Status === 'Pago' ? 1 : 0;
                 const statusB = b.Status === 'Pago' ? 1 : 0;
@@ -1181,17 +1188,21 @@
                 return new Date(a.Vencimento).getTime() - new Date(b.Vencimento).getTime();
             });
 
-            const headers = ['Descrição', 'Valor', 'Vencimento', 'Status', 'Data Pag.', 'Meio Pag.', 'Ações'];
+            const headers = isRelatorio ? ['Descrição', 'Valor', 'Vencimento', 'Status', 'Data Pag.', 'Meio Pag.'] : ['Descrição', 'Valor', 'Vencimento', 'Status', 'Data Pag.', 'Meio Pag.', 'Ações'];
+            
             const bodyRenderer = (b) => {
                 const statusInfo = getStatusBoleto(b.Vencimento, b.Status);
                 const isPaid = b.Status === 'Pago';
-                return `<tr><td>${b.Descrição}</td><td>${formatarMoeda(b.Valor)}</td><td>${formatarData(b.Vencimento)}</td><td><span class="status-badge ${statusInfo.classe}">${statusInfo.texto}</span></td><td>${formatarData(b['Data Pagamento'] || 'N/A')}</td><td>${b['Meio Pagamento'] || 'N/A'}</td><td>${isPaid ? `<button class="btn btn-danger btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pendente')"><i class="fas fa-undo"></i> Desfazer</button>` : `<button class="btn btn-success btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pago')"><i class="fas fa-check"></i> Dar Baixa</button>`}</td></tr>`;
+                const actionsCell = isRelatorio ? '' : `<td>${isPaid ? `<button class="btn btn-danger btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pendente')"><i class="fas fa-undo"></i> Desfazer</button>` : `<button class="btn btn-success btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pago')"><i class="fas fa-check"></i> Dar Baixa</button>`}</td>`;
+                return `<tr><td>${b.Descrição}</td><td>${formatarMoeda(b.Valor)}</td><td>${formatarData(b.Vencimento)}</td><td><span class="status-badge ${statusInfo.classe}">${statusInfo.texto}</span></td><td>${formatarData(b['Data Pagamento'] || 'N/A')}</td><td>${b['Meio Pagamento'] || 'N/A'}</td>${actionsCell}</tr>`;
             };
 
             const footerRenderer = (boletos) => {
                 const totalPendente = boletos.filter(b => b.Status === 'Pendente').reduce((sum, b) => sum + (parseFloat(b.Valor) || 0), 0);
                 const totalPago = boletos.filter(b => b.Status === 'Pago').reduce((sum, b) => sum + (parseFloat(b.Valor) || 0), 0);
-                return `<tr><td colspan="4" style="text-align: right;"><strong>Total Pendente:</strong></td><td colspan="3"><strong>${formatarMoeda(totalPendente)}</strong></td></tr><tr><td colspan="4" style="text-align: right;"><strong>Total Pago:</strong></td><td colspan="3"><strong>${formatarMoeda(totalPago)}</strong></td></tr>`;
+                const colSpan1 = isRelatorio ? 4 : 5; // Colunas antes dos valores
+                const colSpan2 = isRelatorio ? 2 : 2; // Colunas para os valores
+                return `<tr><td colspan="${colSpan1}" style="text-align: right;"><strong>Total Pendente:</strong></td><td colspan="${colSpan2}"><strong>${formatarMoeda(totalPendente)}</strong></td></tr><tr><td colspan="${colSpan1}" style="text-align: right;"><strong>Total Pago:</strong></td><td colspan="${colSpan2}"><strong>${formatarMoeda(totalPago)}</strong></td></tr>`;
             };
             montarTabela(sortedBoletos, containerId, headers, bodyRenderer, footerRenderer);
         }
@@ -1209,7 +1220,8 @@
             if (dataTable) dataTable.outerHTML = dataTable.innerHTML;
         }
 
-        function montarTabelaEstoque(estoque, containerId) {
+        // 🟢 CORRIGIDA: Adicionado parâmetro isRelatorio e renderização condicional
+        function montarTabelaEstoque(estoque, containerId, isRelatorio = false) {
             const sortedEstoque = [...estoque].sort((a, b) => {
                 const statusA = getStatusEstoque(a.Quantidade, a.Mínimo).classe;
                 const statusB = getStatusEstoque(b.Quantidade, b.Mínimo).classe;
@@ -1220,32 +1232,42 @@
                 return 0;
             });
 
-            const headers = ['Item', 'Categoria', 'Qtd', 'Mín.', 'Status', 'Última Entrada', 'Última Saída', 'Ações'];
+            const headers = isRelatorio ? ['Item', 'Categoria', 'Qtd', 'Mín.', 'Status'] : ['Item', 'Categoria', 'Qtd', 'Mín.', 'Status', 'Última Entrada', 'Última Saída', 'Ações'];
+            
             const bodyRenderer = (e) => {
                 const statusInfo = getStatusEstoque(e.Quantidade, e.Mínimo);
-                return `<tr><td>${e.Item}</td><td>${e.Categoria}</td><td>${e.Quantidade}</td><td>${e.Mínimo}</td><td><span class="status-badge ${statusInfo.classe}">${statusInfo.texto}</span></td><td>${formatarData(e['Última Entrada'])}</td><td>${formatarData(e['Última Saída'])}</td><td><button class="btn btn-primary btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'entrada')"><i class="fas fa-plus"></i></button><button class="btn btn-danger btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'saida')"><i class="fas fa-minus"></i></button></td></tr>`;
+                // Omite Última Entrada, Última Saída e Ações no relatório
+                const optionalCells = isRelatorio ? '' : `<td>${formatarData(e['Última Entrada'])}</td><td>${formatarData(e['Última Saída'])}</td><td><button class="btn btn-primary btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'entrada')"><i class="fas fa-plus"></i></button><button class="btn btn-danger btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'saida')"><i class="fas fa-minus"></i></button></td>`;
+                return `<tr><td>${e.Item}</td><td>${e.Categoria}</td><td>${e.Quantidade}</td><td>${e.Mínimo}</td><td><span class="status-badge ${statusInfo.classe}">${statusInfo.texto}</span></td>${optionalCells}</tr>`;
             };
 
             const footerRenderer = (estoque) => {
                 const totalBaixo = estoque.filter(e => e.Quantidade < e.Mínimo).length;
                 const totalOk = estoque.length - totalBaixo;
-                return `<tr><td colspan="4" style="text-align: right;"><strong>Total de Itens:</strong></td><td colspan="4"><strong>${estoque.length}</strong> (OK: ${totalOk} | Baixo/Esgotado: ${totalBaixo})</td></tr>`;
+                const colSpanFooter = isRelatorio ? 4 : 4; // Colunas antes dos dados resumidos
+                const colSpanData = isRelatorio ? 1 : 4; // Colunas para os dados resumidos
+                return `<tr><td colspan="${colSpanFooter}" style="text-align: right;"><strong>Total de Itens:</strong></td><td colspan="${colSpanData}"><strong>${estoque.length}</strong> (OK: ${totalOk} | Baixo/Esgotado: ${totalBaixo})</td></tr>`;
             };
             montarTabela(sortedEstoque, containerId, headers, bodyRenderer, footerRenderer);
         }
 
-        function montarTabelaMateriais(materiais, containerId) {
-            const headers = ['Data', 'Item Comprado', 'Quantidade', 'Valor Total', 'Fornecedor', 'Ações'];
-            const bodyRenderer = (m) => `<tr><td>${formatarData(m.Data)}</td><td>${m.Item}</td><td>${m.Quantidade}</td><td>${formatarMoeda(m['Valor Total'])}</td><td>${m.Fornecedor}</td><td><button class="btn btn-danger btn-action" onclick="alert('Exclusão não implementada. ID: ${m.id_firestore}')"><i class="fas fa-trash"></i></button></td></tr>`;
+        // 🟢 CORRIGIDA: Adicionado parâmetro isRelatorio e renderização condicional
+        function montarTabelaMateriais(materiais, containerId, isRelatorio = false) {
+            const headers = isRelatorio ? ['Data', 'Item Comprado', 'Quantidade', 'Valor Total', 'Fornecedor'] : ['Data', 'Item Comprado', 'Quantidade', 'Valor Total', 'Fornecedor', 'Ações'];
+            
+            const bodyRenderer = (m) => `<tr><td>${formatarData(m.Data)}</td><td>${m.Item}</td><td>${m.Quantidade}</td><td>${formatarMoeda(m['Valor Total'])}</td><td>${m.Fornecedor}</td>${isRelatorio ? '' : `<td><button class="btn btn-danger btn-action" onclick="alert('Exclusão não implementada. ID: ${m.id_firestore}')"><i class="fas fa-trash"></i></button></td>`}</tr>`;
+
             const footerRenderer = (materiais) => {
                 const totalValor = materiais.reduce((sum, m) => sum + (parseFloat(m['Valor Total']) || 0), 0);
-                return `<tr><td colspan="3" style="text-align: right;"><strong>Total Gasto em Materiais:</strong></td><td><strong>${formatarMoeda(totalValor)}</strong></td><td colspan="2"></td></tr>`;
+                const colSpan1 = isRelatorio ? 3 : 3;
+                const colSpan2 = isRelatorio ? 1 : 2;
+                return `<tr><td colspan="${colSpan1}" style="text-align: right;"><strong>Total Gasto em Materiais:</strong></td><td><strong>${formatarMoeda(totalValor)}</strong></td><td colspan="${colSpan2}"></td></tr>`;
             };
             montarTabela(materiais, containerId, headers, bodyRenderer, footerRenderer);
         }
         
         // ----------------------------------------------------------------------
-        // --- FUNÇÕES DE GRÁFICOS (CHART.JS) - INCLUÍDAS AGORA ---
+        // --- FUNÇÕES DE GRÁFICOS (CHART.JS) ---
         // ----------------------------------------------------------------------
 
         function destruirGraficos() {
@@ -1511,13 +1533,13 @@
         }
 
         // ----------------------------------------------------------------------
-        // --- FUNÇÕES DE RELATÓRIO - INCLUÍDAS AGORA ---
+        // --- FUNÇÕES DE RELATÓRIO - CORRIGIDAS ---
         // ----------------------------------------------------------------------
 
         function inicializarFiltrosRelatorio() {
             const dataFim = new Date().toISOString().split('T')[0];
             const dataInicio = new Date();
-            dataInicio.setDate(dataInicio.getDate() - 30); // 30 dias atrás
+            dataInicio.setDate(dataInicio.getDate() - 30);
             const dataInicioStr = dataInicio.toISOString().split('T')[0];
 
             const relatorioDataInicio = document.getElementById('relatorioDataInicio');
@@ -1538,6 +1560,7 @@
             });
         }
         
+        // 🟢 FUNÇÃO CORRIGIDA DE GERAR RELATÓRIO
         function gerarRelatorio() {
             const dataInicio = document.getElementById('relatorioDataInicio').value;
             const dataFim = document.getElementById('relatorioDataFim').value;
@@ -1570,7 +1593,6 @@
                 const start = new Date(dataInicio + 'T00:00:00').getTime();
                 const end = new Date(dataFim + 'T00:00:00').getTime();
 
-                // Inclui se o vencimento está no período OU se foi pago no período
                 return (vencimento >= start && vencimento <= end) || (dataPagamento && dataPagamento >= start && dataPagamento <= end);
             });
             const materiaisFiltrados = filtrarPorData(dados.materiais, 'Data', dataInicio, dataFim);
@@ -1608,80 +1630,57 @@
                 `;
             }
 
+            // Função auxiliar para gerar e anexar a tabela temporária no modo Relatório
+            const appendTableToReport = (dataArray, containerId, generatorFunction) => {
+                const tempDiv = document.createElement('div');
+                // Monta a tabela passando TRUE para isRelatorio no container auxiliar 'tempDivInner'
+                generatorFunction(dataArray, 'tempDivInner', true); 
+                
+                tempDiv.innerHTML = document.getElementById('tempDivInner').innerHTML; // Pega o conteúdo gerado
+                document.getElementById('tempDivInner').innerHTML = ''; // Limpa o container auxiliar
+                return tempDiv.innerHTML;
+            };
+            
+            // Cria um container auxiliar único no body para as funções de montagem de tabela
+            let tempContainer = document.getElementById('tempDivInner');
+            if (!tempContainer) {
+                tempContainer = document.createElement('div');
+                tempContainer.id = 'tempDivInner';
+                tempContainer.style.display = 'none';
+                document.body.appendChild(tempContainer);
+            }
+
             // 2. Tabela de Gastos Diários
             if (checkGastos) { 
                 htmlRelatorio += `<h3>💸 Detalhamento de Gastos Diários</h3>`; 
-                const tempDiv = document.createElement('div'); 
-                montarTabelaGastos(gastosFiltrados, 'tempGastos'); 
-                tempDiv.id = 'tempGastos'; 
-                document.body.appendChild(tempDiv); 
-                let tempHTML = tempDiv.innerHTML.replace(/<th>Ações<\/th>/g, '').replace(/<td><button[\s\S]*?<\/button><\/td>/g, '');
-                htmlRelatorio += tempHTML;
-                document.body.removeChild(tempDiv); 
+                htmlRelatorio += appendTableToReport(gastosFiltrados, 'tempGastos', montarTabelaGastos);
                 htmlRelatorio += `<br>`; 
             }
 
             // 3. Tabela de Controle de Boletos
             if (checkBoletos) { 
                 htmlRelatorio += `<h3>🧾 Detalhamento de Boletos (Vencimento ou Pagamento no Período)</h3>`; 
-                const tempDiv = document.createElement('div'); 
-                montarTabelaBoletos(boletosFiltrados, 'tempBoletos'); 
-                tempDiv.id = 'tempBoletos'; 
-                document.body.appendChild(tempDiv); 
-                let tempHTML = tempDiv.innerHTML.replace(/<th>Ações<\/th>/g, '').replace(/<td><button[\s\S]*?<\/button><\/td>/g, '');
-                htmlRelatorio += tempHTML;
-                document.body.removeChild(tempDiv); 
+                htmlRelatorio += appendTableToReport(boletosFiltrados, 'tempBoletos', montarTabelaBoletos);
                 htmlRelatorio += `<br>`; 
             }
 
             // 4. Tabela de Estoque de EPIs
             if (checkEstoque) { 
                 htmlRelatorio += `<h3>👷 Estoque Atual de EPIs</h3>`; 
-                const tempDiv = document.createElement('div'); 
-                montarTabelaEstoque(dados.estoque, 'tempEstoque'); 
-                tempDiv.id = 'tempEstoque'; 
-                document.body.appendChild(tempDiv); 
-                
-                let estoqueTableHTML = tempDiv.querySelector('table').outerHTML; 
-                const tempEl = document.createElement('div'); 
-                tempEl.innerHTML = estoqueTableHTML; 
-                const table = tempEl.querySelector('table'); 
-                const columnsToRemove = [5, 6, 7]; 
-                
-                columnsToRemove.sort((a, b) => b - a).forEach(colIndex => { 
-                    const th = table.querySelectorAll('thead th').item(colIndex);
-                    if (th) th.remove();
-                }); 
-                table.querySelectorAll('tbody tr').forEach(row => { 
-                    columnsToRemove.sort((a, b) => b - a).forEach(colIndex => { 
-                        const td = row.querySelectorAll('td').item(colIndex);
-                        if (td) td.remove();
-                    }); 
-                }); 
-
-                let footerHTML = table.querySelector('tfoot') ? table.querySelector('tfoot').innerHTML : '';
-                if(footerHTML) {
-                    // Ajusta o colspan de 4 para 2 e de 3 para 2, removendo 3 colunas
-                    footerHTML = footerHTML.replace(/colspan="4"/g, 'colspan="2"').replace(/colspan="3"/g, 'colspan="2"'); 
-                    table.querySelector('tfoot').innerHTML = footerHTML;
-                }
-                
-                htmlRelatorio += tempEl.innerHTML; 
-                document.body.removeChild(tempDiv); 
+                htmlRelatorio += appendTableToReport(dados.estoque, 'tempEstoque', montarTabelaEstoque);
                 htmlRelatorio += `<br>`; 
             }
 
             // 5. Tabela de Compra de Materiais
             if (checkMateriais) { 
                 htmlRelatorio += `<h3>🧱 Detalhamento de Compra de Materiais</h3>`; 
-                const tempDiv = document.createElement('div'); 
-                montarTabelaMateriais(materiaisFiltrados, 'tempMateriais'); 
-                tempDiv.id = 'tempMateriais'; 
-                document.body.appendChild(tempDiv); 
-                let tempHTML = tempDiv.innerHTML.replace(/<th>Ações<\/th>/g, '').replace(/<td><button[\s\S]*?<\/button><\/td>/g, '');
-                htmlRelatorio += tempHTML;
-                document.body.removeChild(tempDiv); 
+                htmlRelatorio += appendTableToReport(materiaisFiltrados, 'tempMateriais', montarTabelaMateriais);
                 htmlRelatorio += `<br>`; 
+            }
+            
+            // Remove o container auxiliar ao final da geração
+            if (document.body.contains(tempContainer)) {
+                document.body.removeChild(tempContainer);
             }
 
             outputDiv.innerHTML = htmlRelatorio;
@@ -1695,8 +1694,6 @@
             const dataMaterial = document.getElementById('materialData');
             if(dataGasto) dataGasto.value = hoje;
             if(dataMaterial) dataMaterial.value = hoje;
-            
-            // O onAuthStateChanged cuida de chamar carregarDadosFirebase() e mudarAba('dashboard') após o login
         });
     </script>
 </body>
