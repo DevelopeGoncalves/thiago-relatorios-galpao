@@ -1229,7 +1229,7 @@
             const footerRenderer = (estoque) => {
                 const totalBaixo = estoque.filter(e => e.Quantidade < e.Mínimo).length;
                 const totalOk = estoque.length - totalBaixo;
-                return `<tr><td colspan="4" style="text-align: right;"><strong>Total de Itens:</strong></td><td colspan="4"><strong>${estoque.length}</strong> (OK: ${totalOk} | Baixo/Esgotado: ${epiBaixoCount})</td></tr>`;
+                return `<tr><td colspan="4" style="text-align: right;"><strong>Total de Itens:</strong></td><td colspan="4"><strong>${estoque.length}</strong> (OK: ${totalOk} | Baixo/Esgotado: ${totalBaixo})</td></tr>`;
             };
             montarTabela(sortedEstoque, containerId, headers, bodyRenderer, footerRenderer);
         }
