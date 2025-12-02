@@ -17,6 +17,10 @@
             --success-color: #4CAF50;
             --danger-color: #F44336;
             --warning-color: #FFC107;
+            /* Mude estas cores */
+            --success-color: #28a745; /* Novo OK/Verde */
+            --warning-color: #ffc107; /* Novo Baixo/Amarelo */
+            --danger-color: #dc3545; /* Novo Esgotado/Vermelho */
         }
 
         body {
@@ -1363,7 +1367,7 @@
             desenharGrafico('gastosPorCategoriaChart', 'doughnut', data, options);
         }
 
-        function desenharEstoqueStatus() {
+         function desenharEstoqueStatus() {
             let okCount = 0;
             let baixoCount = 0;
             let esgotadoCount = 0;
@@ -1375,14 +1379,30 @@
                 else if (statusInfo.texto === 'Esgotado') esgotadoCount++;
             });
 
+            // 🟢 CORREÇÃO: LER AS VARIÁVEIS CSS (VARs)
+            const style = window.getComputedStyle(document.body);
+            const successColor = style.getPropertyValue('--success-color').trim() || '#4CAF50';
+            const warningColor = style.getPropertyValue('--warning-color').trim() || '#FFC107';
+            const dangerColor = style.getPropertyValue('--danger-color').trim() || '#F44336';
+            // ------------------------------------------
+
+            // Verifica se há dados para desenhar (melhoria)
+            if (okCount === 0 && baixoCount === 0 && esgotadoCount === 0) {
+                const container = document.getElementById('estoqueStatusChart').closest('.chart-container');
+                if (container) {
+                    container.innerHTML = '<h3>Itens de Estoque por Status</h3><p>Nenhum item de estoque registrado.</p><canvas id="estoqueStatusChart" style="display:none;"></canvas>';
+                }
+                return;
+            }
+
             const data = {
                 labels: ['OK', 'Baixo', 'Esgotado'],
                 datasets: [{
                     data: [okCount, baixoCount, esgotadoCount],
                     backgroundColor: [
-                        'var(--success-color)',
-                        'var(--warning-color)',
-                        'var(--danger-color)',
+                        successColor, // Usa o valor literal lido do CSS
+                        warningColor, // Usa o valor literal lido do CSS
+                        dangerColor,  // Usa o valor literal lido do CSS
                     ],
                     hoverOffset: 4
                 }]
@@ -1399,6 +1419,8 @@
 
             desenharGrafico('estoqueStatusChart', 'pie', data, options);
         }
+
+
 
         function desenharMateriaisPorMes() {
             const dataAtual = new Date();
