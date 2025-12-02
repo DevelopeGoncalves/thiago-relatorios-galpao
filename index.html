@@ -435,7 +435,7 @@
 </head>
 
 <body>
-    
+
     <div id="login-container">
         <h2>🚧 Gestão de Obras - Login</h2>
         <input type="email" id="email-login" placeholder="E-mail" required>
@@ -445,7 +445,7 @@
     </div>
 
     <div id="dashboard-container" style="display: none; width: 100%;">
-        
+
         <div class="sidebar">
             <div class="logo">🚧 Gestão de Obras</div>
             <ul class="menu">
@@ -559,7 +559,7 @@
                         <option value="">Selecione a Categoria</option>
                         <option value="Proteção">Proteção</option>
                         <option value="Uniforme">Uniforme</option>
-                        <option value="Uniforme">Insumo</option>
+                        <option value="Insumo">Insumo</option>
                         <option value="Ferramenta">Ferramenta</option>
                     </select>
                     <input type="number" id="epiQuantidade" placeholder="Quantidade Inicial" required>
@@ -649,7 +649,7 @@
             <i class="fas fa-print"></i> Imprimir Relatório
         </button>
 
-    </div> 
+    </div>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -665,11 +665,11 @@
             appId: "1:111920470310:web:bb14f0e8497cad4ae809e7",
             measurementId: "G-ZSDYBWSHK7"
         };
-        
+
         // Inicialização do Firebase e Instâncias de Serviços
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(); 
-        const auth = firebase.auth(); 
+        const db = firebase.firestore();
+        const auth = firebase.auth();
 
         // Nomes das Coleções no Firestore
         const colecoes = {
@@ -722,20 +722,20 @@
                     console.error("Erro ao fazer logout:", error);
                 });
         }
-        
+
         auth.onAuthStateChanged((user) => {
             const loginContainer = document.getElementById('login-container');
             const dashboardContainer = document.getElementById('dashboard-container');
             const erroDisplay = document.getElementById('login-erro');
-            
+
             if (user) {
-                loginContainer.style.display = 'none';      
-                dashboardContainer.style.display = 'flex'; 
+                loginContainer.style.display = 'none';
+                dashboardContainer.style.display = 'flex';
                 erroDisplay.textContent = '';
-                carregarDadosFirebase(); 
+                carregarDadosFirebase();
             } else {
-                loginContainer.style.display = 'flex';      
-                dashboardContainer.style.display = 'none';   
+                loginContainer.style.display = 'flex';
+                dashboardContainer.style.display = 'none';
             }
         });
 
@@ -754,9 +754,9 @@
                 const promises = Object.keys(colecoes).map(async key => {
                     const collectionName = colecoes[key];
                     const snapshot = await db.collection(collectionName).get();
-                    dados[key] = snapshot.docs.map(doc => ({ 
-                        id_firestore: doc.id, 
-                        ...doc.data() 
+                    dados[key] = snapshot.docs.map(doc => ({
+                        id_firestore: doc.id,
+                        ...doc.data()
                     }));
                 });
 
@@ -764,7 +764,7 @@
 
                 atualizarDashboard();
                 const abaAtual = document.querySelector('.tab-content.active') ? document.querySelector('.tab-content.active').id : 'dashboard';
-                mudarAba(abaAtual); 
+                mudarAba(abaAtual);
 
             } catch (error) {
                 console.error("Erro ao carregar dados do Firebase:", error);
@@ -781,7 +781,7 @@
             if (!confirm("Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.")) return;
 
             try {
-                await db.collection(colecao).doc(id_firestore).delete();
+                await db.collection(colecoes.estoque).doc(id_firestore).delete();
                 alert("Registro excluído com sucesso!");
                 carregarDadosFirebase();
             } catch (error) {
@@ -812,7 +812,7 @@
             try {
                 await db.collection(colecoes.gastos).add(novoGasto);
                 alert(`Sucesso: Gasto adicionado.`);
-                
+
                 document.getElementById('gastoData').value = new Date().toISOString().split('T')[0];
                 document.getElementById('gastoDescricao').value = '';
                 document.getElementById('gastoCategoria').value = '';
@@ -824,7 +824,7 @@
                 alert(`Falha ao salvar no Firebase. Detalhes: ${error.message}`);
             }
         }
-        
+
         async function adicionarBoleto() {
             const descricao = document.getElementById('boletoDescricao').value;
             const valor = parseFloat(document.getElementById('boletoValor').value);
@@ -842,7 +842,7 @@
                 'Status': 'Pendente',
                 "Data Pagamento": '',
                 "Meio Pagamento": '',
-                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp() 
+                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp()
             };
 
             try {
@@ -852,7 +852,7 @@
                 document.getElementById('boletoDescricao').value = '';
                 document.getElementById('boletoValor').value = '';
                 document.getElementById('boletoVencimento').value = '';
-                
+
                 await carregarDadosFirebase();
             } catch (error) {
                 console.error("Erro ao adicionar boleto:", error);
@@ -881,8 +881,8 @@
                 }
             } else {
                 novoStatus = 'Pendente';
-                dataPagamento = ''; 
-                meioPagamento = ''; 
+                dataPagamento = '';
+                meioPagamento = '';
             }
 
             const dataAtualizacao = {
@@ -895,14 +895,14 @@
             try {
                 await db.collection(colecoes.boletos).doc(id_firestore).update(dataAtualizacao);
                 alert('Boleto atualizado com sucesso no Firebase!');
-                
+
                 await carregarDadosFirebase();
             } catch (error) {
                 console.error("Erro ao dar baixa no boleto:", error);
                 alert(`Falha ao atualizar no Firebase. Detalhes: ${error.message}`);
             }
         }
-        
+
         async function adicionarEPI() {
             const item = document.getElementById('epiItem').value;
             const categoria = document.getElementById('epiCategoria').value;
@@ -922,7 +922,7 @@
                 'Mínimo': minimo,
                 'Última Entrada': hoje,
                 'Última Saída': 'N/A',
-                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp() 
+                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp()
             };
 
             try {
@@ -933,14 +933,14 @@
                 document.getElementById('epiCategoria').value = '';
                 document.getElementById('epiQuantidade').value = '';
                 document.getElementById('epiMinimo').value = '';
-                
+
                 await carregarDadosFirebase();
             } catch (error) {
                 console.error("Erro ao adicionar EPI:", error);
                 alert(`Falha ao salvar no Firebase. Detalhes: ${error.message}`);
             }
         }
-        
+
         async function adicionarMovimentacaoEPI(id_firestore, tipo) {
             const epi = dados.estoque.find(e => e.id_firestore === id_firestore);
             if (!epi) {
@@ -966,7 +966,7 @@
                 }
                 novaQuantidade -= quantidadeMovimentacao;
                 campoData = 'Última Saída';
-            } else { 
+            } else {
                 novaQuantidade += quantidadeMovimentacao;
                 campoData = 'Última Entrada';
             }
@@ -980,7 +980,7 @@
             try {
                 await db.collection(colecoes.estoque).doc(id_firestore).update(dataAtualizacao);
                 alert('Estoque atualizado com sucesso no Firebase!');
-                
+
                 await carregarDadosFirebase();
             } catch (error) {
                 console.error("Erro ao movimentar EPI:", error);
@@ -1006,7 +1006,7 @@
                 'Quantidade': quantidade,
                 'Valor Total': valor,
                 'Fornecedor': fornecedor,
-                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp() 
+                'CriadoEm': firebase.firestore.FieldValue.serverTimestamp()
             };
 
             try {
@@ -1018,7 +1018,7 @@
                 document.getElementById('materialQuantidade').value = '';
                 document.getElementById('materialValor').value = '';
                 document.getElementById('materialFornecedor').value = '';
-                
+
                 await carregarDadosFirebase();
             } catch (error) {
                 console.error("Erro ao adicionar material:", error);
@@ -1036,7 +1036,7 @@
 
             const target = event ? event.target.closest('.tab') : document.querySelector(`.tab[onclick*="${aba}"]`);
             if (target) target.classList.add('active');
-            
+
             const content = document.getElementById(aba);
             if (content) content.classList.add('active');
 
@@ -1100,7 +1100,7 @@
 
         function atualizarDashboard() {
             const hoje = new Date().toISOString().split('T')[0];
-            const mesAtual = new Date().toISOString().substring(0, 7); 
+            const mesAtual = new Date().toISOString().substring(0, 7);
 
             let totalHoje = 0;
             let totalMes = 0;
@@ -1182,7 +1182,7 @@
         // 🟢 CORRIGIDA: Adicionado parâmetro isRelatorio e renderização condicional
         function montarTabelaGastos(gastos, containerId, isRelatorio = false) {
             const headers = isRelatorio ? ['Data', 'Descrição', 'Categoria', 'Valor'] : ['Data', 'Descrição', 'Categoria', 'Valor', 'Ações'];
-            
+
             const bodyRenderer = (g) => `<tr><td>${formatarData(g.Data)}</td><td>${g.Descrição}</td><td>${g.Categoria}</td><td>${formatarMoeda(g.Valor)}</td>${isRelatorio ? '' : `<td><button class="btn btn-danger btn-action" onclick="excluirRegistro('${colecoes.gastos}', '${g.id_firestore}')"><i class="fas fa-trash"></i></button></td>`}</tr>`;
 
             const footerRenderer = (gastos) => {
@@ -1204,7 +1204,7 @@
             });
 
             const headers = isRelatorio ? ['Descrição', 'Valor', 'Vencimento', 'Status', 'Data Pag.', 'Meio Pag.'] : ['Descrição', 'Valor', 'Vencimento', 'Status', 'Data Pag.', 'Meio Pag.', 'Ações'];
-            
+
             const bodyRenderer = (b) => {
                 const statusInfo = getStatusBoleto(b.Vencimento, b.Status);
                 const isPaid = b.Status === 'Pago';
@@ -1221,7 +1221,7 @@
             };
             montarTabela(sortedBoletos, containerId, headers, bodyRenderer, footerRenderer);
         }
-        
+
         function montarTabelaProximosVencimentos(boletos, containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = boletos.length === 0 ? '<p>Nenhum boleto vencido ou próximo do vencimento (próximos 10 dias).</p>' : '';
@@ -1229,7 +1229,7 @@
 
             const headers = ['Descrição', 'Valor', 'Vencimento', 'Status'];
             const bodyRenderer = (b) => `<tr><td>${b.Descrição}</td><td>${formatarMoeda(b.Valor)}</td><td>${formatarData(b.Vencimento)}</td><td><span class="status-badge ${b.classe}">${b.status}</span></td></tr>`;
-            
+
             montarTabela(boletos, containerId, headers, bodyRenderer);
             const dataTable = container.querySelector('.data-table');
             if (dataTable) dataTable.outerHTML = dataTable.innerHTML;
@@ -1248,7 +1248,7 @@
             });
 
             const headers = isRelatorio ? ['Item', 'Categoria', 'Qtd', 'Mín.', 'Status'] : ['Item', 'Categoria', 'Qtd', 'Mín.', 'Status', 'Última Entrada', 'Última Saída', 'Ações'];
-            
+
             const bodyRenderer = (e) => {
                 const statusInfo = getStatusEstoque(e.Quantidade, e.Mínimo);
                 // Omite Última Entrada, Última Saída e Ações no relatório
@@ -1269,7 +1269,7 @@
         // 🟢 CORRIGIDA: Adicionado parâmetro isRelatorio e renderização condicional
         function montarTabelaMateriais(materiais, containerId, isRelatorio = false) {
             const headers = isRelatorio ? ['Data', 'Item Comprado', 'Quantidade', 'Valor Total', 'Fornecedor'] : ['Data', 'Item Comprado', 'Quantidade', 'Valor Total', 'Fornecedor', 'Ações'];
-            
+
             const bodyRenderer = (m) => `<tr><td>${formatarData(m.Data)}</td><td>${m.Item}</td><td>${m.Quantidade}</td><td>${formatarMoeda(m['Valor Total'])}</td><td>${m.Fornecedor}</td>${isRelatorio ? '' : `<td><button class="btn btn-danger btn-action" onclick="excluirRegistro('${colecoes.materiais}', '${m.id_firestore}')"><i class="fas fa-trash"></i></button></td>`}</tr>`;
 
             const footerRenderer = (materiais) => {
@@ -1280,7 +1280,7 @@
             };
             montarTabela(materiais, containerId, headers, bodyRenderer, footerRenderer);
         }
-        
+
         // ----------------------------------------------------------------------
         // --- FUNÇÕES DE GRÁFICOS (CHART.JS) ---
         // ----------------------------------------------------------------------
@@ -1312,6 +1312,7 @@
             });
         }
 
+        // 🟢 CORRIGIDA: Adicionada verificação de dados e tratamento de cores
         function desenharGastosPorCategoria() {
             const mesAtual = new Date().toISOString().substring(0, 7);
             const gastosMes = dados.gastos.filter(g => g.Data && g.Data.substring(0, 7) === mesAtual);
@@ -1324,6 +1325,19 @@
 
             const labels = Object.keys(categorias);
             const dataValues = Object.values(categorias);
+
+            // Verifica se há dados para desenhar
+            if (dataValues.length === 0 || dataValues.every(v => v === 0)) {
+                const container = document.getElementById('gastosPorCategoriaChart').closest('.chart-container');
+                if (container) {
+                    container.innerHTML = '<h3>Gastos por Categoria (Mês Atual)</h3><p>Nenhum gasto registrado neste mês.</p><canvas id="gastosPorCategoriaChart" style="display:none;"></canvas>';
+                }
+                return;
+            }
+
+            // Garante que o canvas está visível
+            const canvas = document.getElementById('gastosPorCategoriaChart');
+            if(canvas) canvas.style.display = 'block';
 
             const data = {
                 labels: labels,
@@ -1363,6 +1377,7 @@
             desenharGrafico('gastosPorCategoriaChart', 'doughnut', data, options);
         }
 
+        // 🟢 CORRIGIDA: Cores lidas das variáveis CSS para o JS
         function desenharEstoqueStatus() {
             let okCount = 0;
             let baixoCount = 0;
@@ -1374,15 +1389,36 @@
                 else if (statusInfo.texto === 'Baixo') baixoCount++;
                 else if (statusInfo.texto === 'Esgotado') esgotadoCount++;
             });
+            
+            // Verifica se há dados para desenhar
+             if (okCount === 0 && baixoCount === 0 && esgotadoCount === 0) {
+                const container = document.getElementById('estoqueStatusChart').closest('.chart-container');
+                if (container) {
+                    container.innerHTML = '<h3>Itens de Estoque por Status</h3><p>Nenhum item de estoque registrado.</p><canvas id="estoqueStatusChart" style="display:none;"></canvas>';
+                }
+                return;
+            }
+
+            // Garante que o canvas está visível
+            const canvas = document.getElementById('estoqueStatusChart');
+            if(canvas) canvas.style.display = 'block';
+
+
+            // CORREÇÃO: Lê as variáveis CSS usando window.getComputedStyle()
+            const style = window.getComputedStyle(document.body);
+            const successColor = style.getPropertyValue('--success-color').trim() || '#4CAF50';
+            const warningColor = style.getPropertyValue('--warning-color').trim() || '#FFC107';
+            const dangerColor = style.getPropertyValue('--danger-color').trim() || '#F44336';
+
 
             const data = {
                 labels: ['OK', 'Baixo', 'Esgotado'],
                 datasets: [{
                     data: [okCount, baixoCount, esgotadoCount],
                     backgroundColor: [
-                        'var(--success-color)',
-                        'var(--warning-color)',
-                        'var(--danger-color)',
+                        successColor, // Usa a cor lida
+                        warningColor, // Usa a cor lida
+                        dangerColor,  // Usa a cor lida
                     ],
                     hoverOffset: 4
                 }]
@@ -1426,6 +1462,19 @@
                     }
                 }
             });
+
+            // Verifica se há dados para desenhar
+            if (valores.every(v => v === 0)) {
+                const container = document.getElementById('materiaisPorMesChart').closest('.chart-container');
+                if (container) {
+                    container.innerHTML = '<h3>Total de Compras de Materiais (Últimos 6 meses)</h3><p>Nenhuma compra de material nos últimos 6 meses.</p><canvas id="materiaisPorMesChart" style="display:none;"></canvas>';
+                }
+                return;
+            }
+            
+            // Garante que o canvas está visível
+            const canvas = document.getElementById('materiaisPorMesChart');
+            if(canvas) canvas.style.display = 'block';
 
             const data = {
                 labels: labels,
@@ -1499,6 +1548,19 @@
             Object.keys(gastosDiarios).forEach(key => {
                 dataPoints.push(gastosDiarios[key]);
             });
+            
+            // Verifica se há dados para desenhar
+            if (dataPoints.every(v => v === 0)) {
+                const container = document.getElementById('gastosDiariosChart').closest('.chart-container');
+                if (container) {
+                    container.innerHTML = '<h3>Gastos Diários (Últimos 30 dias)</h3><p>Nenhum gasto registrado nos últimos 30 dias.</p><canvas id="gastosDiariosChart" style="display:none;"></canvas>';
+                }
+                return;
+            }
+            
+            // Garante que o canvas está visível
+            const canvas = document.getElementById('gastosDiariosChart');
+            if(canvas) canvas.style.display = 'block';
 
             const data = {
                 labels: labels,
@@ -1559,9 +1621,9 @@
 
             const relatorioDataInicio = document.getElementById('relatorioDataInicio');
             const relatorioDataFim = document.getElementById('relatorioDataFim');
-            
-            if(relatorioDataInicio) relatorioDataInicio.value = dataInicioStr;
-            if(relatorioDataFim) relatorioDataFim.value = dataFim;
+
+            if (relatorioDataInicio) relatorioDataInicio.value = dataInicioStr;
+            if (relatorioDataFim) relatorioDataFim.value = dataFim;
         }
 
         function filtrarPorData(dataArray, campoData, dataInicio, dataFim) {
@@ -1574,7 +1636,7 @@
                 return itemDate >= start && itemDate <= end;
             });
         }
-        
+
         // 🟢 FUNÇÃO CORRIGIDA DE GERAR RELATÓRIO
         function gerarRelatorio() {
             const dataInicio = document.getElementById('relatorioDataInicio').value;
@@ -1622,7 +1684,7 @@
                 const totalBoletosPendentes = boletosFiltrados
                     .filter(b => b.Status === 'Pendente' && b.Vencimento && new Date(b.Vencimento + 'T00:00:00').getTime() >= new Date(dataInicio + 'T00:00:00').getTime() && new Date(b.Vencimento + 'T00:00:00').getTime() <= new Date(dataFim + 'T00:00:00').getTime())
                     .reduce((sum, b) => sum + (parseFloat(b.Valor) || 0), 0);
-                
+
                 const totalGeral = totalGastos + totalMateriais + totalBoletosPago;
 
                 htmlRelatorio += `
@@ -1649,13 +1711,13 @@
             const appendTableToReport = (dataArray, containerId, generatorFunction) => {
                 const tempDiv = document.createElement('div');
                 // Monta a tabela passando TRUE para isRelatorio no container auxiliar 'tempDivInner'
-                generatorFunction(dataArray, 'tempDivInner', true); 
-                
+                generatorFunction(dataArray, 'tempDivInner', true);
+
                 tempDiv.innerHTML = document.getElementById('tempDivInner').innerHTML; // Pega o conteúdo gerado
                 document.getElementById('tempDivInner').innerHTML = ''; // Limpa o container auxiliar
                 return tempDiv.innerHTML;
             };
-            
+
             // Cria um container auxiliar único no body para as funções de montagem de tabela
             let tempContainer = document.getElementById('tempDivInner');
             if (!tempContainer) {
@@ -1666,33 +1728,33 @@
             }
 
             // 2. Tabela de Gastos Diários
-            if (checkGastos) { 
-                htmlRelatorio += `<h3>💸 Detalhamento de Gastos Diários</h3>`; 
+            if (checkGastos) {
+                htmlRelatorio += `<h3>💸 Detalhamento de Gastos Diários</h3>`;
                 htmlRelatorio += appendTableToReport(gastosFiltrados, 'tempGastos', montarTabelaGastos);
-                htmlRelatorio += `<br>`; 
+                htmlRelatorio += `<br>`;
             }
 
             // 3. Tabela de Controle de Boletos
-            if (checkBoletos) { 
-                htmlRelatorio += `<h3>🧾 Detalhamento de Boletos (Vencimento ou Pagamento no Período)</h3>`; 
+            if (checkBoletos) {
+                htmlRelatorio += `<h3>🧾 Detalhamento de Boletos (Vencimento ou Pagamento no Período)</h3>`;
                 htmlRelatorio += appendTableToReport(boletosFiltrados, 'tempBoletos', montarTabelaBoletos);
-                htmlRelatorio += `<br>`; 
+                htmlRelatorio += `<br>`;
             }
 
             // 4. Tabela de Estoque de EPIs
-            if (checkEstoque) { 
-                htmlRelatorio += `<h3>👷 Estoque Atual de EPIs</h3>`; 
+            if (checkEstoque) {
+                htmlRelatorio += `<h3>👷 Estoque Atual de EPIs</h3>`;
                 htmlRelatorio += appendTableToReport(dados.estoque, 'tempEstoque', montarTabelaEstoque);
-                htmlRelatorio += `<br>`; 
+                htmlRelatorio += `<br>`;
             }
 
             // 5. Tabela de Compra de Materiais
-            if (checkMateriais) { 
-                htmlRelatorio += `<h3>🧱 Detalhamento de Compra de Materiais</h3>`; 
+            if (checkMateriais) {
+                htmlRelatorio += `<h3>🧱 Detalhamento de Compra de Materiais</h3>`;
                 htmlRelatorio += appendTableToReport(materiaisFiltrados, 'tempMateriais', montarTabelaMateriais);
-                htmlRelatorio += `<br>`; 
+                htmlRelatorio += `<br>`;
             }
-            
+
             // Remove o container auxiliar ao final da geração
             if (document.body.contains(tempContainer)) {
                 document.body.removeChild(tempContainer);
@@ -1707,8 +1769,8 @@
             const hoje = new Date().toISOString().split('T')[0];
             const dataGasto = document.getElementById('gastoData');
             const dataMaterial = document.getElementById('materialData');
-            if(dataGasto) dataGasto.value = hoje;
-            if(dataMaterial) dataMaterial.value = hoje;
+            if (dataGasto) dataGasto.value = hoje;
+            if (dataMaterial) dataMaterial.value = hoje;
         });
     </script>
 </body>
