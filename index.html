@@ -461,7 +461,7 @@
                     <div class="tab" onclick="mudarAba('boletos')"><i class="fas fa-receipt"></i> Controle de Boletos</div>
                 </li>
                 <li>
-                    <div class="tab" onclick="mudarAba('estoque')"><i class="fas fa-hard-hat"></i> Estoque EPI</div>
+                    <div class="tab" onclick="mudarAba('estoque')"><i class="fas fa-hard-hat"></i> Estoque</div>
                 </li>
                 <li>
                     <div class="tab" onclick="mudarAba('materiais')"><i class="fas fa-boxes"></i> Compra de Materiais</div>
@@ -559,6 +559,7 @@
                         <option value="">Selecione a Categoria</option>
                         <option value="Proteção">Proteção</option>
                         <option value="Uniforme">Uniforme</option>
+                        <option value="Uniforme">Insumo</option>
                         <option value="Ferramenta">Ferramenta</option>
                     </select>
                     <input type="number" id="epiQuantidade" placeholder="Quantidade Inicial" required>
@@ -772,6 +773,20 @@
             } finally {
                 atualizarBtn.disabled = false;
                 atualizarBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Dados';
+            }
+        }
+
+        // Função universal para excluir registro no Firestore
+        async function excluirRegistro(colecao, id_firestore) {
+            if (!confirm("Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.")) return;
+
+            try {
+                await db.collection(colecao).doc(id_firestore).delete();
+                alert("Registro excluído com sucesso!");
+                carregarDadosFirebase();
+            } catch (error) {
+                console.error("Erro ao excluir registro:", error);
+                alert("Erro ao excluir. Verifique o console para detalhes.");
             }
         }
 
@@ -1168,7 +1183,7 @@
         function montarTabelaGastos(gastos, containerId, isRelatorio = false) {
             const headers = isRelatorio ? ['Data', 'Descrição', 'Categoria', 'Valor'] : ['Data', 'Descrição', 'Categoria', 'Valor', 'Ações'];
             
-            const bodyRenderer = (g) => `<tr><td>${formatarData(g.Data)}</td><td>${g.Descrição}</td><td>${g.Categoria}</td><td>${formatarMoeda(g.Valor)}</td>${isRelatorio ? '' : `<td><button class="btn btn-danger btn-action" onclick="alert('Exclusão não implementada. ID: ${g.id_firestore}')"><i class="fas fa-trash"></i></button></td>`}</tr>`;
+            const bodyRenderer = (g) => `<tr><td>${formatarData(g.Data)}</td><td>${g.Descrição}</td><td>${g.Categoria}</td><td>${formatarMoeda(g.Valor)}</td>${isRelatorio ? '' : `<td><button class="btn btn-danger btn-action" onclick="excluirRegistro('${colecoes.gastos}', '${g.id_firestore}')"><i class="fas fa-trash"></i></button></td>`}</tr>`;
 
             const footerRenderer = (gastos) => {
                 const total = gastos.reduce((sum, g) => sum + (parseFloat(g.Valor) || 0), 0);
@@ -1193,7 +1208,7 @@
             const bodyRenderer = (b) => {
                 const statusInfo = getStatusBoleto(b.Vencimento, b.Status);
                 const isPaid = b.Status === 'Pago';
-                const actionsCell = isRelatorio ? '' : `<td>${isPaid ? `<button class="btn btn-danger btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pendente')"><i class="fas fa-undo"></i> Desfazer</button>` : `<button class="btn btn-success btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pago')"><i class="fas fa-check"></i> Dar Baixa</button>`}</td>`;
+                const actionsCell = isRelatorio ? '' : `<td>${isPaid ? `<button class="btn btn-danger btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pendente')"><i class="fas fa-undo"></i> Desfazer</button>` : `<button class="btn btn-success btn-action" onclick="darBaixaBoleto('${b.id_firestore}', 'Pago')"><i class="fas fa-check"></i> Dar Baixa</button>`} <button class="btn btn-danger btn-action" onclick="excluirRegistro('${colecoes.boletos}', '${b.id_firestore}')"><i class="fas fa-trash"></i></button></td>`;
                 return `<tr><td>${b.Descrição}</td><td>${formatarMoeda(b.Valor)}</td><td>${formatarData(b.Vencimento)}</td><td><span class="status-badge ${statusInfo.classe}">${statusInfo.texto}</span></td><td>${formatarData(b['Data Pagamento'] || 'N/A')}</td><td>${b['Meio Pagamento'] || 'N/A'}</td>${actionsCell}</tr>`;
             };
 
@@ -1237,7 +1252,7 @@
             const bodyRenderer = (e) => {
                 const statusInfo = getStatusEstoque(e.Quantidade, e.Mínimo);
                 // Omite Última Entrada, Última Saída e Ações no relatório
-                const optionalCells = isRelatorio ? '' : `<td>${formatarData(e['Última Entrada'])}</td><td>${formatarData(e['Última Saída'])}</td><td><button class="btn btn-primary btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'entrada')"><i class="fas fa-plus"></i></button><button class="btn btn-danger btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'saida')"><i class="fas fa-minus"></i></button></td>`;
+                const optionalCells = isRelatorio ? '' : `<td>${formatarData(e['Última Entrada'])}</td><td>${formatarData(e['Última Saída'])}</td><td><button class="btn btn-primary btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'entrada')"><i class="fas fa-plus"></i></button><button class="btn btn-danger btn-action" onclick="adicionarMovimentacaoEPI('${e.id_firestore}', 'saida')"><i class="fas fa-minus"></i></button> <button class="btn btn-danger btn-action" onclick="excluirRegistro('${colecoes.estoque}', '${e.id_firestore}')"><i class="fas fa-trash"></i></button></td>`;
                 return `<tr><td>${e.Item}</td><td>${e.Categoria}</td><td>${e.Quantidade}</td><td>${e.Mínimo}</td><td><span class="status-badge ${statusInfo.classe}">${statusInfo.texto}</span></td>${optionalCells}</tr>`;
             };
 
@@ -1255,7 +1270,7 @@
         function montarTabelaMateriais(materiais, containerId, isRelatorio = false) {
             const headers = isRelatorio ? ['Data', 'Item Comprado', 'Quantidade', 'Valor Total', 'Fornecedor'] : ['Data', 'Item Comprado', 'Quantidade', 'Valor Total', 'Fornecedor', 'Ações'];
             
-            const bodyRenderer = (m) => `<tr><td>${formatarData(m.Data)}</td><td>${m.Item}</td><td>${m.Quantidade}</td><td>${formatarMoeda(m['Valor Total'])}</td><td>${m.Fornecedor}</td>${isRelatorio ? '' : `<td><button class="btn btn-danger btn-action" onclick="alert('Exclusão não implementada. ID: ${m.id_firestore}')"><i class="fas fa-trash"></i></button></td>`}</tr>`;
+            const bodyRenderer = (m) => `<tr><td>${formatarData(m.Data)}</td><td>${m.Item}</td><td>${m.Quantidade}</td><td>${formatarMoeda(m['Valor Total'])}</td><td>${m.Fornecedor}</td>${isRelatorio ? '' : `<td><button class="btn btn-danger btn-action" onclick="excluirRegistro('${colecoes.materiais}', '${m.id_firestore}')"><i class="fas fa-trash"></i></button></td>`}</tr>`;
 
             const footerRenderer = (materiais) => {
                 const totalValor = materiais.reduce((sum, m) => sum + (parseFloat(m['Valor Total']) || 0), 0);
